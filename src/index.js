@@ -4,11 +4,17 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
+import { HashRouter as Router } from 'react-router-dom'
+import {SystemsProvider} from './contexts/systems';
 
 ReactDOM.render(
   <StrictMode>
     <ColorModeScript />
-    <App />
+    <Router>
+      <SystemsProvider>
+        <App /> 
+      </SystemsProvider>
+    </Router>
   </StrictMode>,
   document.getElementById('root')
 );
