@@ -10,15 +10,17 @@ import {
   Tbody,
   Tr,
   Td,
-  Spinner
+  Spinner,
+  HStack
 } from "@chakra-ui/react";
 import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
 import {getDB} from '../logic/databases';
 import GoBack from './common/goBack';
+import {CheckIcon} from '@chakra-ui/icons';
 
 export default function Stats(props) {
-  const  [ipfsNode, orbit, , myForms] = useSystemsContext();
+  const  [ipfsNode, orbit, , myForms,entries] = useSystemsContext();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(true);
   const [formCid, setFormCid] = React.useState();
@@ -27,6 +29,7 @@ export default function Stats(props) {
   const [formName, setFormName] = React.useState();
   const [formDescription, setFormDescription] = React.useState();
   // const [dB, setDB] = React.useState();
+  const [formSupported, setFormSupported] = React.useState();
   const [responses, setResponses] = React.useState([]);
 
   const addSupport = async()=>{
@@ -45,10 +48,20 @@ export default function Stats(props) {
 
   const getFormData = async (cid) =>{
     for await (const result of ipfsNode.cat(cid.toString())) {
-      console.log(result)
+      // console.log(result)
       return result
     }
   }
+
+  const isSupported = (id) => {
+    if(entries && entries.length > 0){
+      let entriesIds = entries.map(x=>{return (x.payload.value.responses)})
+      // console.log('entriesIds',entriesIds)
+      return entriesIds.includes(id)
+    }
+    return false;
+  }
+
   React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(ipfsNode){        // this gots into trouble
         setLoading(true)
@@ -57,12 +70,13 @@ export default function Stats(props) {
         setFormCid(cid)
 
         let formObj = await getFormData(cid)
-        // console.log(formObj.formData)
+        // console.log('formobj',formObj)
         //Read responses? create instance of DB
         if(formObj){
           setResponsesId(formObj.responses)
           setFormName(formObj.name)
           setFormDescription(formObj.description)
+          setFormSupported(isSupported(formObj.responses))
           let db = await getDB(orbit, formObj.responses)
           // setDB(db)
           if(db){
@@ -81,7 +95,7 @@ export default function Stats(props) {
         }
         setLoading(false)
       }
-  },[formCID, ipfsNode, orbit])// eslint-disable-line react-hooks/exhaustive-deps
+  },[formCID, ipfsNode, orbit, myForms])// eslint-disable-line react-hooks/exhaustive-deps
 
 
   //responsesId database in
@@ -115,11 +129,20 @@ export default function Stats(props) {
           <VStack>
             <Text>{formName}</Text>
             <Text>{formDescription?formDescription:null}</Text>
-            <Button onClick={()=>{addSupport()}}>Support this form!</Button> {/*isDisabled={form in myForms}*/}
+            {formSupported?
+              <HStack>
+                <Text>Form supported </Text>
+                <CheckIcon />
+              </HStack>
+            :
+              <Button onClick={()=>{addSupport()}}>Support this form!</Button>
+            }
             <Text>General Responses</Text>
             <Text>Manage different kind of forms with its properties</Text>
-
-            <Text>Responses</Text>
+            <HStack>
+              <Text>Responses</Text>
+              <Button isDisabled onClick={()=>console.log('export to csv!')}>Download responses</Button>
+            </HStack>
             <Divider/>
             <Table>
             <Thead>
@@ -134,9 +157,9 @@ export default function Stats(props) {
             <Tbody>
               {responses.map(x=>{return(
                 <Tr>
-                  <Td>{x.payload.value.key.slice(0,5)}..</Td>
+                  <Td>..{x.payload.value.key.slice(-5,-1)}</Td>
                   {formData.map(y=>{return(
-                    <Td>{x.payload.value.value[y.name]}</Td>
+                    <Td>{x.payload.value.value[y.name].toString()}</Td>
                   )}
 
                   )}

@@ -9,6 +9,7 @@ import {
   RadioGroup,
   FormLabel,
   IconButton,
+  Checkbox,
   FormHelperText,
 } from '@chakra-ui/react';
 import {useSystemsContext} from './../contexts/systems';
@@ -19,7 +20,7 @@ import { useStateMachine } from "little-state-machine";
 import GoBack from './common/goBack';
 import copyClipBoard from "../logic/copyClipBoard"
 import { CopyIcon } from '@chakra-ui/icons';
-
+import {useHistory} from 'react-router-dom';
 function CreateForm() {
   const {
     state: { formData = [] },
@@ -31,6 +32,7 @@ function CreateForm() {
   const [description, setDescription ] = useState();
   const [permissions, setPermissions] = useState('public');
   const [formCreated, setFormCreated] = useState();
+  const history = useHistory();
 
   const dagPreparation = async (data) =>{
   // in put {pin:true} //test this!!
@@ -55,30 +57,37 @@ function CreateForm() {
     }
 
   async function newForm(){
+    if(window.confirm('Do you want to create this form?')){
+      let responsesDbId = await createDatabase();
+      // let formDataJson = JSON.stringify(formData);// parse:error
+      const type = 'eventlog';
+      const formDataCid = await dagPreparation({formData})
+      if(responsesDbId && formDataCid){
+        let newFormObj = {name:nameForm,description:description,responses:responsesDbId, formData:formDataCid}
+        let newFormCid = await dagPreparation(newFormObj)
 
-    let responsesDbId = await createDatabase();
-    // let formDataJson = JSON.stringify(formData);// parse:error
-    const type = 'eventlog';
-    const formDataCid = await dagPreparation({formData})
-    if(responsesDbId && formDataCid){
-      let newFormObj = {name:nameForm,description:description,responses:responsesDbId, formData:formDataCid}
-      let newFormCid = await dagPreparation(newFormObj)
+        myForms.add({
+          name:nameForm,
+          type,
+          formDataCid:newFormCid.toString(),
+          description: description,
+          responses: responsesDbId,
+          added: Date.now()
+        })
 
-      myForms.add({
-        name:nameForm,
-        type,
-        formDataCid:newFormCid.toString(),
-        description: description,
-        responses: responsesDbId,
-        added: Date.now()
-      })
+        console.log(newFormCid.toString())
+        setFormCreated(newFormCid.toString())
+        window.alert('New form created!')
+        history.push('/form/'+newFormCid.toString())
 
-      console.log(newFormCid.toString())
-      setFormCreated(newFormCid.toString())
-      return newFormCid.toString();
-      // Add to DB root?
+        return newFormCid.toString();
+        // Add to DB root?
+      }else{
+        return 'Error'
+      }
     }else{
-      return 'Error'
+      console.log('rejected!')
+      return
     }
   }
 
@@ -105,6 +114,22 @@ function CreateForm() {
               <FormHelperText>Give some extra data for your public</FormHelperText>
             </FormControl>
 
+            <HStack>
+              <FormControl id="signable">
+                <HStack>
+                  <FormLabel>Signable</FormLabel>
+                  <Checkbox isDisabled/>
+                </HStack>
+              </FormControl>
+
+              <FormControl id="humans">
+                <HStack>
+                  <FormLabel>Only humans</FormLabel>
+                  <Checkbox isDisabled/>
+                </HStack>
+              </FormControl>
+            </HStack>
+
             <FormControl as="open" isRequired>
               <FormLabel as="legend">Access for your form</FormLabel>
               <RadioGroup defaultValue="Public" onChange={(value)=>setPermissions(value)}>
@@ -125,7 +150,7 @@ function CreateForm() {
             <BuilderPage
               showBuilder={toggleBuilder}
               toggleBuilder={()=>setToggleBuilder(!toggleBuilder)}
-              HomeRef='https://react-hook-form.com/form-builder'
+              HomeRef='/'
               isStatic={!toggleBuilder} // what is this???
               defaultLang='en'
               newForm ={newForm}
@@ -145,6 +170,8 @@ function CreateForm() {
               <Output
               formData={formData}
               isCreation={true}
+              formName={nameForm}
+              formDescription={description}
               />
               :null}
 

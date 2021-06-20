@@ -32,6 +32,7 @@ import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
 import {getDB} from '../logic/databases';
 import GoBack from './common/goBack';
+import {useHistory} from 'react-router-dom';
 
 
 export default function Output(props) {
@@ -45,6 +46,7 @@ export default function Output(props) {
   const [formName, setFormName] = React.useState();
   const [formDescription, setFormDescription] = React.useState();
   const [dB, setDB] = React.useState();
+  const history = useHistory();
 
   const getPublicKey = async () =>{
     let ipfsId = await ipfsNode.id();
@@ -67,7 +69,7 @@ export default function Output(props) {
 
   const getFormData = async (cid) =>{
     for await (const result of ipfsNode.cat(cid.toString())) {
-      console.log(result)
+      // console.log(result)
       return result
     }
   }
@@ -103,7 +105,8 @@ export default function Output(props) {
   const onSubmit =async (data) => {
     // send a log to the responses DB
     await dB.add({key:await getPublicKey(), value:data})
-    console.log(data)
+    // console.log(data)
+    history.push('/stats/'+formCid)
   };
   const onError = error =>{
     console.log(error);
@@ -261,8 +264,8 @@ const formElement = (item) => {
         :
         <form onSubmit={handleSubmit(onSubmit, onError)}>
           <VStack>
-            <Text>{formName}</Text>
-            <Text>{formDescription?formDescription:null}</Text>
+            <Text  fontSize='md'>{formName?formName:props.formName}</Text>
+            <Text  fontSize='sm'>{formDescription?formDescription:props.formDescription}</Text>
           </VStack>
           <VStack>
           {formData && formData.length > 0?

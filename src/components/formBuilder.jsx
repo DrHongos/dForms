@@ -117,7 +117,7 @@ function BuilderPage({
     setValue("required", editFormData.required)
   }, [editIndex, editFormData.required, setValue])
 
-  const [requiredField, setRequiredField] = useState(true);
+  const [requiredField, setRequiredField] = useState(false);
 
   const child = (
     <div>
@@ -253,13 +253,13 @@ function BuilderPage({
                   marginTop: 0,
                 }}
               >
-                <Checkbox // cannot change it.. it doesnt respond
+                <input // cannot change it.. it doesnt respond
                   type="checkbox"
                   name="required"
                   label='Required'
                   isChecked={requiredField}
                   onChange={()=>setRequiredField(!requiredField)}
-                  {...register('required',{required:true})}
+                  {...register('required')}
                   />
                 Required
               </label>
