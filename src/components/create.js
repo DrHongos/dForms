@@ -128,8 +128,8 @@ function CreateForm() {
               HomeRef='https://react-hook-form.com/form-builder'
               isStatic={!toggleBuilder} // what is this???
               defaultLang='en'
+              newForm ={newForm}
             />
-            <Button onClick={()=>newForm()}>Spread!</Button>
             {formCreated?
               <HStack>
                 <Text>{formCreated}</Text>

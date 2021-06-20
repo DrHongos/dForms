@@ -6,24 +6,10 @@ import * as React from "react"
 import { Animate } from "react-simple-animate"
 import { useForm } from "react-hook-form"
 import { useStateMachine } from "little-state-machine"
-// import { navigate } from "@reach/router"
-// import colors from "../styles/colors"
-import generateCode from "../logic/generateCode"
-import copyClipBoard from "../logic/copyClipBoard"
 import SortableContainer from "./sortables/sortableContainer"
-// import Footer from "./Footer"
-// import Popup from "./Popup"
-// import LearnMore from "./learnMore"
-// import goToBuilder from "./utils/goToBuilder"
 import builder from "../data/builder"
 import generic from "../data/generic"
-// import translateLink from "./logic/translateLink"
-// import * as buttonStyles from "../styles/button.module.css"
-// import * as containerStyles from "../styles/container.module.css"
-// import * as typographyStyles from "../styles/typography.module.css"
-// import * as styles from "./BuilderPage.module.css"
-// import CodeArea from "./CodeArea"
-import {Input, Select,  HStack, Text, Checkbox} from '@chakra-ui/react';
+import {Input, Select,  HStack, Text, Checkbox, Button} from '@chakra-ui/react';
 
 
 const { useState, useRef, useEffect } = React
@@ -58,12 +44,12 @@ function BuilderPage({
   HomeRef,
   isStatic,
   defaultLang,
+  newForm,
 }) {
   const {
     state: { formData = [], language = {}},
     actions: { updateFormData },
   } = useStateMachine({ updateFormData: updateStore })
-  const isV7 = true;
   const { currentLanguage } =
     language && language.currentLanguage
       ? language
@@ -154,8 +140,8 @@ function BuilderPage({
           />
         </section>
 
-        <form  onSubmit={handleSubmit(onSubmit)}>
-          <h2  ref={form}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <h2 ref={form}>
             {builder.inputCreator[currentLanguage].title}
           </h2>
 
@@ -336,41 +322,7 @@ function BuilderPage({
               ? generic.update[currentLanguage]
               : generic.create[currentLanguage]}
           </button>
-
-
         </form>
-        <section
-          style={{
-            paddingRight: "20px",
-            position: "relative",
-          }}
-        >
-          <h2>
-            {builder.code[currentLanguage].title}
-          </h2>
-          <section
-            style={{
-              position: "relative",
-            }}
-          >
-            <div >
-              <button
-                onClick={() => {
-                  copyClipBoard(generateCode(formData, isV7))
-                  alert(generic.copied[currentLanguage])
-                }}
-                aria-label={generic.copied[currentLanguage]}
-              >
-                {generic.copy[currentLanguage]}
-              </button>
-            </div>
-{/*            <CodeArea rawData={generateCode(formData, isV7)} />*/}
-          </section>
-        </section>
-      </div>
-
-      <div style={{ margin: "0 20px" }}>
-
       </div>
     </div>
   )
@@ -398,18 +350,8 @@ function BuilderPage({
               background: '#2f4f4f',
             }}
           >
-            <button
-              aria-label="close builder"
-              ref={closeButton}
-              onClick={() => {
-                toggleBuilder(false)
-              }}
-            >
-              &#10005;
-            </button>
-{/*            goToBuilder(false)*/}
-
             {child}
+            <Button isDisabled={!formData} onClick={()=>newForm()}>Spread!</Button> {/*does not disable correctly*/}
           </div>
         </main>
       )}

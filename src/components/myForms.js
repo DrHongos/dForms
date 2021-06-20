@@ -51,7 +51,7 @@ function MyForms() {
           {entries.map(x=>{return(
             <Tr key={x.hash}>
               <Td >{x.payload.value.name}</Td>
-              <Td >{x.payload.value.formDataCid.slice(0,8)}..</Td>
+              <Td >{x.payload.value.formDataCid.slice(0,5)}..</Td>
               <Td >
                 <IconButton
                   onClick={()=>copyClipBoard('localhost:3000/#/form/'+x.payload.value.formDataCid)}

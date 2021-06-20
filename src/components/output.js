@@ -35,11 +35,11 @@ import GoBack from './common/goBack';
 
 
 export default function Output(props) {
-  const  [ipfsNode, orbit] = useSystemsContext();
+  const  [ipfsNode, orbit, , myForms] = useSystemsContext();
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(false);
-  // const [formCid, setFormCid] = React.useState();
+  const [formCid, setFormCid] = React.useState();
   const [formDataR, setFormDataR] = React.useState();
   const [responsesId, setResponsesId] = React.useState();
   const [formName, setFormName] = React.useState();
@@ -49,6 +49,19 @@ export default function Output(props) {
   const getPublicKey = async () =>{
     let ipfsId = await ipfsNode.id();
     return ipfsId.publicKey;
+  }
+
+  const addSupport = async()=>{
+    let type='eventlog'
+    myForms.add({
+      name:formName,
+      type,
+      formDataCid:formCid,
+      description: formDescription,
+      responses: responsesId,
+      added: Date.now()
+    })
+    console.log('added!')
   }
 
 
@@ -63,7 +76,7 @@ export default function Output(props) {
         setLoading(true)
 
         let cid = formCID.split('/form/')
-        // setFormCid(cid)
+        setFormCid(cid)
 
         let formObj = await getFormData(cid)
         // console.log(formObj.formData)
@@ -95,14 +108,6 @@ export default function Output(props) {
   const onError = error =>{
     console.log(error);
   }
-
-  //responsesId database in
-
-  // export const dagPreparation = async (data) =>{
-  // // in put {pin:true} //test this!!
-  //   let cid = await ipfsNode.dag.put(data);
-  //   return cid;
-  // }
 
 // switch for different elements possible in formData,
   let formData
@@ -274,7 +279,7 @@ const formElement = (item) => {
                 path='/'
               />
 
-              <Button onClick={()=>{console.log('add to myForms')}}>Support this form!</Button>
+              <Button onClick={()=>addSupport()}>Support this form!</Button>
               <Button isDisabled={!responsesId} type='submit'>Send!</Button>
             </HStack>
             :null}
