@@ -140,12 +140,12 @@ export default function Stats(props) {
             <Text>General Responses</Text>
             <Text>Manage different kind of forms with its properties</Text>
             <HStack>
-              <Text>Responses</Text>
+              <Text>Responses: {entries.length}</Text>
               <Button isDisabled onClick={()=>console.log('export to csv!')}>Download responses</Button>
             </HStack>
             <Divider/>
             <Table>
-            <Thead>
+            <Thead style={{backgroundColor:'gray'}}>
               <Tr>
                 <Td>IPFS Node</Td>
                 {formData.map(x=>{return(

@@ -128,15 +128,22 @@ function CreateForm() {
                   <Checkbox isDisabled/>
                 </HStack>
               </FormControl>
-            </HStack>
 
-            <FormControl as="open" isRequired>
-              <FormLabel as="legend">Access for your form</FormLabel>
-              <RadioGroup defaultValue="Public" onChange={(value)=>setPermissions(value)}>
+            <FormControl id="oracle">
+              <HStack>
+                <FormLabel>Oracle</FormLabel>
+                <Checkbox isDisabled/>
+              </HStack>
+            </FormControl>
+
+            </HStack>
+            <FormControl  isRequired>
+              <FormLabel >Access for your form</FormLabel>
+              <RadioGroup value={permissions} onChange={(value)=>setPermissions(value)}>
                 <HStack spacing="24px">
                   <Radio value="public">Public</Radio>
-                  <Radio disabled value="encrypted">Encrypted</Radio>
-                  <Radio disabled value="whitelisted">Whitelisted</Radio>
+                  <Radio isDisabled value="encrypted">Encrypted</Radio>
+                  <Radio isDisabled value="whitelisted">Whitelisted</Radio>
                 </HStack>
               </RadioGroup>
               <FormHelperText>We are working on expanding your choices!</FormHelperText>
