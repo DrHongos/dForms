@@ -2,12 +2,11 @@ import * as React from "react"
 import {Flex} from '@chakra-ui/react';
 import {ReactSortable} from "react-sortablejs"
 import { Animate } from "react-simple-animate"
-import {Input, Select, Button, Checkbox, Text} from '@chakra-ui/react';
-import generic from "../data/generic"
+import {Button} from '@chakra-ui/react';
+import generic from "../../data/generic"
 import {
   editPanel,
   list,
-  sortableWrapper,
 } from "./SortableContainer.module.css"
 
 export default function SortableContainer({

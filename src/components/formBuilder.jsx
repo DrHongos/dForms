@@ -10,7 +10,7 @@ import { useStateMachine } from "little-state-machine"
 // import colors from "../styles/colors"
 import generateCode from "../logic/generateCode"
 import copyClipBoard from "../logic/copyClipBoard"
-import SortableContainer from "./sortableContainer"
+import SortableContainer from "./sortables/sortableContainer"
 // import Footer from "./Footer"
 // import Popup from "./Popup"
 // import LearnMore from "./learnMore"
@@ -23,7 +23,7 @@ import generic from "../data/generic"
 // import * as typographyStyles from "../styles/typography.module.css"
 // import * as styles from "./BuilderPage.module.css"
 // import CodeArea from "./CodeArea"
-import {Input, Select, Button, HStack, Text, Checkbox} from '@chakra-ui/react';
+import {Input, Select,  HStack, Text, Checkbox} from '@chakra-ui/react';
 
 
 const { useState, useRef, useEffect } = React
@@ -60,7 +60,7 @@ function BuilderPage({
   defaultLang,
 }) {
   const {
-    state: { formData = [], language, setting = {}},
+    state: { formData = [], language = {}},
     actions: { updateFormData },
   } = useStateMachine({ updateFormData: updateStore })
   const isV7 = true;
@@ -121,15 +121,15 @@ function BuilderPage({
 
   useEffect(() => {
     setValue("toggle", shouldToggleOn)
-  }, [shouldToggleOn])
+  }, [shouldToggleOn, setValue])
 
   useEffect(() => {
     if (editFormData.type) setValue("type", editFormData.type)
-  }, [editFormData.type])
+  }, [editFormData.type, setValue])
 
   useEffect(() => {
     setValue("required", editFormData.required)
-  }, [editIndex])
+  }, [editIndex, editFormData.required, setValue])
 
   const [requiredField, setRequiredField] = useState(true);
 

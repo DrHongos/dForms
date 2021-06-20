@@ -1,6 +1,6 @@
 import * as React from "react"
 
-export default {
+const out = {
   copy: {
     en: "Copy",
     es: "Copiar",
@@ -381,3 +381,5 @@ export default {
     ),
   },
 }
+
+export default out;

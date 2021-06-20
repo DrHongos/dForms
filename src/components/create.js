@@ -2,29 +2,29 @@ import {
   Text,
   VStack,HStack,
   Button,
-  IconButton,
   Input,
   Spinner,
   FormControl,
   Radio,
   RadioGroup,
   FormLabel,
+  IconButton,
   FormHelperText,
 } from '@chakra-ui/react';
-import {ArrowBackIcon} from '@chakra-ui/icons';
-import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
 import BuilderPage from './formBuilder';
 import Output from './output';
 import {useState} from 'react';
 import { useStateMachine } from "little-state-machine";
+import GoBack from './common/goBack';
+import copyClipBoard from "../logic/copyClipBoard"
+import { CopyIcon } from '@chakra-ui/icons';
 
 function CreateForm() {
   const {
-    state: { formData = [], language, setting = {} },
+    state: { formData = [] },
   } = useStateMachine()
   const  [ipfsNode, orbit, loading, myForms] = useSystemsContext();
-  const history = useHistory();
   const [creation, setCreation] = useState(false);
   const [toggleBuilder ,setToggleBuilder] = useState(true);
   const [nameForm, setNameForm ] = useState();
@@ -60,7 +60,7 @@ function CreateForm() {
     // let formDataJson = JSON.stringify(formData);// parse:error
     const type = 'eventlog';
     const formDataCid = await dagPreparation({formData})
-    if(responsesDbId, formDataCid){
+    if(responsesDbId && formDataCid){
       let newFormObj = {name:nameForm,description:description,responses:responsesDbId, formData:formDataCid}
       let newFormCid = await dagPreparation(newFormObj)
 
@@ -76,7 +76,7 @@ function CreateForm() {
       console.log(newFormCid.toString())
       setFormCreated(newFormCid.toString())
       return newFormCid.toString();
-      // Add to DB root
+      // Add to DB root?
     }else{
       return 'Error'
     }
@@ -85,9 +85,9 @@ function CreateForm() {
 
   return (
       <VStack w='100%'>
-      <IconButton
-        icon={<ArrowBackIcon />}
-        onClick={()=>history.push('/')}></IconButton>
+        <GoBack
+          path='/'
+        />
         <Text fontSize='md'>Create your form</Text>
         <Text color='red' fontSize='sm'>Remember this is unencrypted and public!</Text>
           {!creation?
@@ -131,7 +131,13 @@ function CreateForm() {
             />
             <Button onClick={()=>newForm()}>Spread!</Button>
             {formCreated?
-              <Text>{formCreated} - Copy and share!</Text>
+              <HStack>
+                <Text>{formCreated}</Text>
+                <IconButton
+                  icon={<CopyIcon />}
+                  onClick={()=>copyClipBoard('localhost:3000/#/form/'+formCreated)}
+                  />
+              </HStack>
             :null}
 
             </VStack>

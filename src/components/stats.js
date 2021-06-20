@@ -1,43 +1,24 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
 import {
-  FormErrorMessage,
-  FormLabel,
-  FormControl,
-  Input,
   Button,
-  Select,
-  Radio,
-  RadioGroup,
   Divider,
   VStack,
-  Checkbox,
   Text,
-  HStack,
-  Slider,
-  SliderTrack,
-  Box,
-  SliderThumb,
-  SliderFilledTrack,
   Stack,
   Table,
   Thead,
   Tbody,
   Tr,
-  Th,
   Td,
-  TableCaption,
-
   Spinner
 } from "@chakra-ui/react";
 import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
 import {getDB} from '../logic/databases';
-
+import GoBack from './common/goBack';
 
 export default function Stats(props) {
-  const  [ipfsNode, orbit, loadingGeneral, myForms] = useSystemsContext();
-  // const { register, handleSubmit, formState: { errors } } = useForm();
+  const  [ipfsNode, orbit, , myForms] = useSystemsContext();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(true);
   const [formCid, setFormCid] = React.useState();
@@ -45,7 +26,7 @@ export default function Stats(props) {
   const [responsesId, setResponsesId] = React.useState();
   const [formName, setFormName] = React.useState();
   const [formDescription, setFormDescription] = React.useState();
-  const [dB, setDB] = React.useState();
+  // const [dB, setDB] = React.useState();
   const [responses, setResponses] = React.useState([]);
 
   const addSupport = async()=>{
@@ -68,8 +49,7 @@ export default function Stats(props) {
       return result
     }
   }
-  let  formObj
-  React.useEffect(async ()=>{
+  React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(ipfsNode){        // this gots into trouble
         setLoading(true)
 
@@ -84,7 +64,7 @@ export default function Stats(props) {
           setFormName(formObj.name)
           setFormDescription(formObj.description)
           let db = await getDB(orbit, formObj.responses)
-          setDB(db)
+          // setDB(db)
           if(db){
             let resp
             resp = await db.iterator({ limit: 100 }).collect().reverse()
@@ -101,7 +81,7 @@ export default function Stats(props) {
         }
         setLoading(false)
       }
-  },[formCID, ipfsNode])
+  },[formCID, ipfsNode, orbit])// eslint-disable-line react-hooks/exhaustive-deps
 
 
   //responsesId database in
@@ -120,10 +100,12 @@ export default function Stats(props) {
     formData = formDataR
   }
 
-  let options;
-
   return (
     <Stack>
+      <GoBack
+        path='/'
+      />
+
       {loading?
         <VStack>
           <Spinner />
@@ -143,7 +125,7 @@ export default function Stats(props) {
             <Thead>
               <Tr>
                 <Td>IPFS Node</Td>
-                {formDataR.map(x=>{return(
+                {formData.map(x=>{return(
                   <Td>{x.name}</Td>
 
                 )})}
@@ -153,7 +135,7 @@ export default function Stats(props) {
               {responses.map(x=>{return(
                 <Tr>
                   <Td>{x.payload.value.key.slice(0,5)}..</Td>
-                  {formDataR.map(y=>{return(
+                  {formData.map(y=>{return(
                     <Td>{x.payload.value.value[y.name]}</Td>
                   )}
 

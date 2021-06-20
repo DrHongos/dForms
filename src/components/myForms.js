@@ -1,15 +1,7 @@
 import {
   Text,
-  VStack,HStack,
-  Button,
+  VStack,
   IconButton,
-  Input,
-  Spinner,
-  FormControl,
-  Radio,
-  RadioGroup,
-  FormLabel,
-  FormHelperText,
   Table,
   Thead,
   Tbody,
@@ -19,19 +11,16 @@ import {
   TableCaption,
 
 } from '@chakra-ui/react';
-import {DeleteIcon, EditIcon, InfoIcon, ArrowBackIcon, CopyIcon } from '@chakra-ui/icons';
+import {DeleteIcon, EditIcon, InfoIcon, CopyIcon } from '@chakra-ui/icons';
 import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
-import BuilderPage from './formBuilder';
-import Output from './output';
-import {useState} from 'react';
-import { useStateMachine } from "little-state-machine";
 import copyClipBoard from "../logic/copyClipBoard"
+import GoBack from './common/goBack';
 
 
 function MyForms() {
   const history = useHistory();
-  const  [ipfsNode, orbit, loading, myForms, entries] = useSystemsContext();
+  const  [, , , myForms, entries] = useSystemsContext();
 
   const removeDatabase = async (hash) => {
     console.log(hash.hash)
@@ -44,10 +33,10 @@ function MyForms() {
 
   return (
     <VStack>
-      <IconButton
-        onClick={()=>history.push('/')}
-        icon={<ArrowBackIcon />}
-        />
+      <GoBack
+        path='/'
+      />
+
     {entries && entries.length > 0?
       <Table>
         <TableCaption placement='top'>My forms supported! (import one!)</TableCaption>

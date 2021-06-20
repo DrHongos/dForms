@@ -31,6 +31,7 @@ import {
 import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
 import {getDB} from '../logic/databases';
+import GoBack from './common/goBack';
 
 
 export default function Output(props) {
@@ -38,7 +39,7 @@ export default function Output(props) {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(false);
-  const [formCid, setFormCid] = React.useState();
+  // const [formCid, setFormCid] = React.useState();
   const [formDataR, setFormDataR] = React.useState();
   const [responsesId, setResponsesId] = React.useState();
   const [formName, setFormName] = React.useState();
@@ -57,13 +58,12 @@ export default function Output(props) {
       return result
     }
   }
-  let  formObj
-  React.useEffect(async ()=>{
+  React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(!props.isCreation && ipfsNode){        // this gots into trouble
         setLoading(true)
 
         let cid = formCID.split('/form/')
-        setFormCid(cid)
+        // setFormCid(cid)
 
         let formObj = await getFormData(cid)
         // console.log(formObj.formData)
@@ -85,7 +85,7 @@ export default function Output(props) {
         }
         setLoading(false)
       }
-  },[formCID, ipfsNode, props.isCreation])
+  },[formCID, ipfsNode, props.isCreation, orbit]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit =async (data) => {
     // send a log to the responses DB
@@ -112,9 +112,9 @@ export default function Output(props) {
     formData = formDataR
   }
 
-  let options;
+  // let options;
 const formElement = (item) => {
-  let type;
+  // let type;
   switch (item.type) {
     case 'text':
     return (
@@ -238,7 +238,7 @@ const formElement = (item) => {
           min:item.min,
           pattern:item.pattern
         })} />
-        <FormHelperText>We'll never share your email.</FormHelperText>
+        <FormHelperText>dont enter your email. This is a public and open database!</FormHelperText>
       </FormControl>
     );
     default:
@@ -258,7 +258,6 @@ const formElement = (item) => {
           <VStack>
             <Text>{formName}</Text>
             <Text>{formDescription?formDescription:null}</Text>
-            <Button onClick={()=>{console.log('add to myForms')}}>Support this form!</Button> {/*isDisabled={form in myForms}*/}
           </VStack>
           <VStack>
           {formData && formData.length > 0?
@@ -266,10 +265,18 @@ const formElement = (item) => {
               {formData.map(x=>{return(
                   formElement(x)
                 )})}
+              <Divider />
             </VStack>
           :null}
           {!props.isCreation && dB?
-            <Button isDisabled={!responsesId} type='submit'>Send!</Button>
+            <HStack>
+              <GoBack
+                path='/'
+              />
+
+              <Button onClick={()=>{console.log('add to myForms')}}>Support this form!</Button>
+              <Button isDisabled={!responsesId} type='submit'>Send!</Button>
+            </HStack>
             :null}
             {/*      await db.add({key:key,value:ipfsCid.string})*/}
             </VStack>

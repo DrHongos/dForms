@@ -1,4 +1,4 @@
-export default {
+const out =  {
   title: {
     en: "Form Builder",
     es: "Constructor de Formulario",
@@ -168,3 +168,4 @@ export default {
     },
   },
 }
+export default out;

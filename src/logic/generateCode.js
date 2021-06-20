@@ -1,6 +1,6 @@
 // modify this to create Chakra-UI form type!
 // check why input does not get required
-export default (formData, isV7) => {
+const code = (formData, isV7) => {
   return `import React from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -184,3 +184,5 @@ ${
   );
 }`
 }
+
+export default  code;
