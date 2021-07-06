@@ -30,49 +30,34 @@ import {
 } from "@chakra-ui/react";
 import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
-import {getDB} from '../logic/databases';
+import {getDB, getFormData, addSupport, isSupported} from '../logic/databases';
 import GoBack from './common/goBack';
 import {useHistory} from 'react-router-dom';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; // needed!!!
+// CSS Modules, react-datepicker-cssmodules.css
+import 'react-datepicker/dist/react-datepicker-cssmodules.css';
+
 
 
 export default function Output(props) {
-  const  [ipfsNode, orbit, , myForms] = useSystemsContext();
+  const  [ipfsNode, orbit, , myFormsDB, myForms] = useSystemsContext();
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(false);
   const [formCid, setFormCid] = React.useState();
   const [formDataR, setFormDataR] = React.useState();
-  const [responsesId, setResponsesId] = React.useState();
-  const [formName, setFormName] = React.useState();
-  const [formDescription, setFormDescription] = React.useState();
+  const [supported, setSupported] = React.useState();
+  const [formObject, setFormObject] = React.useState();
   const [dB, setDB] = React.useState();
+  const [prevResponse, setPrevResponse] = React.useState();
   const history = useHistory();
 
-  const getPublicKey = async () =>{
-    let ipfsId = await ipfsNode.id();
-    return ipfsId.publicKey;
-  }
+  // const getPublicKey = async () =>{
+  //   let ipfsId = await ipfsNode.id();
+  //   return ipfsId.publicKey;
+  // }
 
-  const addSupport = async()=>{
-    let type='eventlog'
-    myForms.add({
-      name:formName,
-      type,
-      formDataCid:formCid,
-      description: formDescription,
-      responses: responsesId,
-      added: Date.now()
-    })
-    console.log('added!')
-  }
-
-
-  const getFormData = async (cid) =>{
-    for await (const result of ipfsNode.cat(cid.toString())) {
-      // console.log(result)
-      return result
-    }
-  }
   React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(!props.isCreation && ipfsNode){        // this gots into trouble
         setLoading(true)
@@ -80,34 +65,45 @@ export default function Output(props) {
         let cid = formCID.split('/form/')
         setFormCid(cid)
 
-        let formObj = await getFormData(cid)
-        // console.log(formObj.formData)
+        let formObj = await getFormData(ipfsNode, cid)
+        // console.log(formObj)
         //Read responses? create instance of DB
         if(formObj){
-          setResponsesId(formObj.responses)
-          setFormName(formObj.name)
-          setFormDescription(formObj.description)
+          setFormObject(formObj)
+          setFormDataR(formObj.formData)
+          let support = await isSupported(formObj.responses, myForms)
+          setSupported(support)
 
-          let db = await getDB(orbit, formObj.responses)
-          setDB(db)
+          let responses = await getDB(orbit, formObj.responses)
+          setDB(responses)
+          // checkout prev responses, so we update it
+          if(responses){
+            let prev = await responses.get(orbit.id);
+            if(prev){
+              setPrevResponse(prev)
+              // fill the fields. change the oplog? (it handles well alone)
+            }
+          }
 
-        }
-        try{
-          let formDataArray = await getFormData(formObj.formData)
-          setFormDataR(formDataArray.formData)
-        }catch{
-          return 'error'
+        }else{
+          setFormObject({})
         }
         setLoading(false)
       }
   },[formCID, ipfsNode, props.isCreation, orbit]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit =async (data) => {
-    // send a log to the responses DB
-    await dB.add({key:await getPublicKey(), value:data})
-    // console.log(data)
-    history.push('/stats/'+formCid)
+    // send a log to the responses DB (keyvalue)
+    // here! checkout if prev responses to update!
+    console.log(data)
+    if(data){
+      await dB.put(orbit.id,data)
+      history.push('/stats/'+formCid)
+    }else{
+      console.log('answer the damn form!')
+    }
   };
+
   const onError = error =>{
     console.log(error);
   }
@@ -126,10 +122,11 @@ const formElement = (item) => {
   switch (item.type) {
     case 'text':
     return (
-      <FormControl isInvalid={errors.name} isRequired={item.required}>
+      <FormControl key={item.name} isInvalid={errors.name} isRequired={item.required}>
         <FormLabel htmlFor="name">{item.name}</FormLabel>
         <Input
           id={item.name}
+          defaultValue = {prevResponse?prevResponse[item.name]:''}
           placeholder={item.name}
           {...register(`${item.name}`, {
             required: item.required,
@@ -146,10 +143,11 @@ const formElement = (item) => {
     )
     case 'textarea':
     return (
-      <FormControl isInvalid={errors.name} isRequired={item.required}>
+      <FormControl key={item.name} isInvalid={errors.name} isRequired={item.required}>
         <FormLabel htmlFor="name">{item.name}</FormLabel>
         <Input
           id={item.name}
+          defaultValue = {prevResponse?prevResponse[item.name]:''}
           placeholder={item.name}
           {...register(`${item.name}`, {
             required: item.required?true:false,
@@ -165,24 +163,27 @@ const formElement = (item) => {
     case 'select':
     let optionsSelect = item.options.split(';');
     return (
-      <FormControl isRequired={item.required}>
+      <FormControl key={item.name} isRequired={item.required}>
         <FormLabel>{item.name}</FormLabel>
-        <Select placeholder={item.name}
+        <Select
+        defaultValue = {prevResponse?prevResponse[item.name]:''}
+        placeholder={item.name}
         {...register(`${item.name}`, {
           required: item.required,
           pattern:item.pattern
         })}>
           {optionsSelect.map(x=>{return(
-            <option value={x}>{x}</option>
+            <option value={x} key={x}>{x}</option>
           )})}
         </Select>
       </FormControl>
     );
     case 'checkbox':
     return (
-      <FormControl isRequired={item.required}>
+      <FormControl key={item.name} isRequired={item.required}>
         <FormLabel>{item.name }</FormLabel>
         <Checkbox
+        defaultValue = {prevResponse?prevResponse[item.name]:''}
         {...register(`${item.name}`, {
           required: item.required,
           pattern:item.pattern
@@ -193,12 +194,14 @@ const formElement = (item) => {
     case 'radio':
     let optionsRadio = item.options.split(';');
     return (
-      <FormControl isRequired={item.required}>
+      <FormControl key={item.name} isRequired={item.required}>
         <FormLabel>{item.name}</FormLabel>
-        <RadioGroup>
+        <RadioGroup
+          defaultValue = {prevResponse?prevResponse[item.name]:''}
+        >
         <Stack>
         {optionsRadio.map((x)=>{return(
-          <Radio value={x} {...register(`${item.name}`,{required:true})}>{x}</Radio>
+          <Radio value={x} key={x} {...register(`${item.name}`,{required:true})}>{x}</Radio>
         )})}
         </Stack>
 
@@ -207,10 +210,14 @@ const formElement = (item) => {
     );
     case 'number':
     return (
-      <FormControl id={item.name} isRequired={item.required}>
+      <FormControl key={item.name} id={item.name} isRequired={item.required}>
         <FormLabel>{item.name}</FormLabel>
-        <NumberInput max={item.max?item.max:100} min={item.min?item.min:0}> {/*breaks on register*/}
-          <NumberInputField />
+        <NumberInput> {/*breaks on register -  max={item.max?item.max:100} min={item.min?item.min:0}*/}
+          <NumberInputField {...register(`${item.name}`, {
+            required: item.required,
+            max:item.max,
+            min:item.min,
+          })} />
           <NumberInputStepper>
             <NumberIncrementStepper />
             <NumberDecrementStepper />
@@ -222,33 +229,77 @@ const formElement = (item) => {
     let maximum = item.max? item.max : 100
     let minimum = item.min? item.min : 0
     return (
-      <FormControl id={item.name} isRequired={item.required} >
+      <FormControl
+        key={item.name}
+        id={item.name}
+        isRequired={item.required}
+        >
         <FormLabel>{item.name}</FormLabel>
-        <Slider min={minimum} max={maximum} onChangeEnd={(value) => console.log(value)}>
-          <SliderTrack bg="red.100">
+        <Slider
+          min={minimum}
+          max={maximum}
+          defaultValue = {prevResponse?prevResponse[item.name]:minimum}
+          onChangeEnd={(value) => {
+            let interf = document.getElementById(item.name.concat('_range'))
+            interf.value = value
+          }}
+          >
+          <SliderTrack
+          bg="red.100">
             <Box position="relative" right={10} />
             <SliderFilledTrack bg="tomato" />
           </SliderTrack>
-          <SliderThumb boxSize={6}>{item.name.value}</SliderThumb>
+          <SliderThumb boxSize={6}></SliderThumb>
         </Slider>
 
-        <Text></Text>
+        <Input id={item.name.concat('_range')} onChange={(data)=>console.log(data)}
+          defaultValue = {prevResponse?prevResponse[item.name]:''}
+          {...register(`${item.name}`, {
+            max:item.max,
+            min:item.min,
+          required: true
+        })}></Input>
+
       </FormControl>
     );
     case 'email':
     return (
-      <FormControl id={item.name} isRequired={item.required}>
+      <FormControl key={item.name} id={item.name} isRequired={item.required}>
         <FormLabel>Email address</FormLabel>
-        <Input type="email" {...register(`${item.name}`, {
-          required: item.required,
-          maxLength:item.maxLength ,
-          max:item.max,
-          min:item.min,
-          pattern:item.pattern
-        })} />
+        <Input
+          defaultValue = {prevResponse?prevResponse[item.name]:''}
+          type="email" {...register(`${item.name}`, {
+            required: item.required,
+            maxLength:item.maxLength ,
+            max:item.max,
+            min:item.min,
+            pattern:item.pattern
+          })} />
         <FormHelperText>dont enter your email. This is a public and open database!</FormHelperText>
       </FormControl>
     );
+    case 'datetime':
+      // {/*showTimeSelect dateFormat="Pp"*/}
+      // {/*Datetime pickers need to be referred to its item.name also for later*/}
+      return (
+        <FormControl id={item.name} isRequired={item.required} key={item.name}>
+          <FormLabel>{item.name}</FormLabel>
+          <DatePicker
+            placeholderText='Select date'
+            onChange={(date) => {
+              let inputElement = document.getElementById(item.name.concat('_selected'))
+              inputElement.value = date.toISOString() //actually should be timestamp.. then frontend converts to local
+            }}
+            />
+          <Input id={item.name.concat('_selected')} onChange={(data)=>console.log(data)}
+            defaultValue = {prevResponse?prevResponse[item.name]:''}
+            {...register(`${item.name}`, {
+            required: true
+          })}></Input>
+        </FormControl>
+
+       );
+
     default:
     return null;
   }
@@ -264,14 +315,14 @@ const formElement = (item) => {
         :
         <form onSubmit={handleSubmit(onSubmit, onError)}>
           <VStack>
-            <Text  fontSize='md'>{formName?formName:props.formName}</Text>
-            <Text  fontSize='sm'>{formDescription?formDescription:props.formDescription}</Text>
+            <Text  fontSize='md'>{formObject?.name?formObject.name:props.formName}</Text>
+            <Text  fontSize='sm'>{formObject?.description?formObject.description:props.formDescription}</Text>
           </VStack>
           <VStack>
           {formData && formData.length > 0?
             <VStack>
               {formData.map(x=>{return(
-                  formElement(x)
+                formElement(x)
                 )})}
               <Divider />
             </VStack>
@@ -281,9 +332,12 @@ const formElement = (item) => {
               <GoBack
                 path='/'
               />
-
-              <Button onClick={()=>addSupport()}>Support this form!</Button>
-              <Button isDisabled={!responsesId} type='submit'>Send!</Button>
+              {supported?
+              <Text>Supported!</Text>
+              :
+              <Button onClick={()=>addSupport(myFormsDB, 'keyvalue', formObject, formCid)}>Support this form!</Button>
+              }
+              <Button isDisabled={!formObject.responses} type='submit'>Send!</Button>
             </HStack>
             :null}
             {/*      await db.add({key:key,value:ipfsCid.string})*/}

@@ -15,6 +15,7 @@
     "little-state-machine": "^4.1.2",
     "orbit-db": "^0.26.1",
     "react": "^17.0.2",
+    "react-datepicker": "^4.1.1",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.8.7",
     "react-icons": "^3.0.0",

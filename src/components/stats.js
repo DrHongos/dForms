@@ -15,52 +15,24 @@ import {
 } from "@chakra-ui/react";
 import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
-import {getDB} from '../logic/databases';
+import {getDB, getFormData, addSupport, isSupported} from '../logic/databases';
 import GoBack from './common/goBack';
 import {CheckIcon} from '@chakra-ui/icons';
 
 export default function Stats(props) {
-  const  [ipfsNode, orbit, , myForms,entries] = useSystemsContext();
+  const  [ipfsNode, orbit, , myFormsDB,myForms] = useSystemsContext();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(true);
   const [formCid, setFormCid] = React.useState();
   const [formDataR, setFormDataR] = React.useState();
-  const [responsesId, setResponsesId] = React.useState();
-  const [formName, setFormName] = React.useState();
-  const [formDescription, setFormDescription] = React.useState();
-  // const [dB, setDB] = React.useState();
-  const [formSupported, setFormSupported] = React.useState();
+  const [formObject, setFormObject] = React.useState();
+  // const [responsesDB, setResponsesDB] = React.useState();
   const [responses, setResponses] = React.useState([]);
+  // const [supportersDB, setSupportersDB] = React.useState();
+  const [supported, setSupported] = React.useState();
 
-  const addSupport = async()=>{
-    let type='eventlog'
-    myForms.add({
-      name:formName,
-      type,
-      formDataCid:formCid,
-      description: formDescription,
-      responses: responsesId,
-      added: Date.now()
-    })
-    console.log('added!')
-  }
+  const getEntriesKeys = (object) =>{return Object.keys(object)}
 
-
-  const getFormData = async (cid) =>{
-    for await (const result of ipfsNode.cat(cid.toString())) {
-      // console.log(result)
-      return result
-    }
-  }
-
-  const isSupported = (id) => {
-    if(entries && entries.length > 0){
-      let entriesIds = entries.map(x=>{return (x.payload.value.responses)})
-      // console.log('entriesIds',entriesIds)
-      return entriesIds.includes(id)
-    }
-    return false;
-  }
 
   React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(ipfsNode){        // this gots into trouble
@@ -69,42 +41,40 @@ export default function Stats(props) {
         let cid = formCID.split('/form/')
         setFormCid(cid)
 
-        let formObj = await getFormData(cid)
+        let formObj = await getFormData(ipfsNode, cid)
         // console.log('formobj',formObj)
         //Read responses? create instance of DB
         if(formObj){
-          setResponsesId(formObj.responses)
-          setFormName(formObj.name)
-          setFormDescription(formObj.description)
-          setFormSupported(isSupported(formObj.responses))
+          setFormObject(formObj)
+          setFormDataR(formObj.formData)
+          //
+          let support = await isSupported(formObj.responses, myForms)
+          setSupported(support)
+// GET DATABASE OBJECT AND DATA
+          let resp;
           let db = await getDB(orbit, formObj.responses)
-          // setDB(db)
-          if(db){
-            let resp
+          // setResponsesDB(db)
+          if(db && db.type === 'eventlog'){
             resp = await db.iterator({ limit: 100 }).collect().reverse()
             setResponses([...resp])
+          }else if(db && db.type==='keyvalue'){
+            resp = await db.all
+            console.log('resp',resp)
+            let respKeys = getEntriesKeys(resp)
+            console.log('flattened',respKeys)
+            let flattened = respKeys.reduce((total, currentValue) => total.concat({key:currentValue, value:resp[currentValue]}), []);
+            setResponses(flattened)
+          }else if(db){ // feed, docstore and counter (or customs)
+              resp = await db.all
+              setResponses(resp)
+          }else{
+            setResponses()
           }
-
-
-        }
-        try{
-          let formDataArray = await getFormData(formObj.formData)
-          setFormDataR(formDataArray.formData)
-        }catch{
-          return 'error'
         }
         setLoading(false)
       }
   },[formCID, ipfsNode, orbit, myForms])// eslint-disable-line react-hooks/exhaustive-deps
 
-
-  //responsesId database in
-
-  // export const dagPreparation = async (data) =>{
-  // // in put {pin:true} //test this!!
-  //   let cid = await ipfsNode.dag.put(data);
-  //   return cid;
-  // }
 
 // switch for different elements possible in formData,
   let formData
@@ -127,22 +97,37 @@ export default function Stats(props) {
         </VStack>
         :
           <VStack>
-            <Text>{formName}</Text>
-            <Text>{formDescription?formDescription:null}</Text>
-            {formSupported?
-              <HStack>
-                <Text>Form supported </Text>
-                <CheckIcon />
-              </HStack>
-            :
-              <Button onClick={()=>{addSupport()}}>Support this form!</Button>
-            }
+            <Text>name: {formObject.name}</Text>
+            <Text>description: {formObject.formDescription?formObject.formDescription:'no description'}</Text>
+            <Text>Form address: <Text fontSize='xs' color='gray'>{formCID}</Text></Text>
+
+{/*
+            <Text>orbit db responses address: {dB.id}</Text>
+            HANDLE ANSWERS WITH OPTIONS TO CALCULATE
             <Text>General Responses</Text>
             <Text>Manage different kind of forms with its properties</Text>
-            <HStack>
-              <Text>Responses: {entries.length}</Text>
+*/}
+
+            {supported?
+              <HStack>
+              <Text>Form supported </Text>
+              <CheckIcon />
+              </HStack>
+              :
+              <Button onClick={()=>{addSupport(myFormsDB, 'keyvalue', formObject, formCid)}}>Support this form!</Button>
+            }
+{/*       STATS AND OPERATIONS OVER THE DB SHARED        */}
+            {responses?
+            <VStack>
+              <Text>Responses: {responses.length}</Text>
+              <Text>Replication status: </Text>
+              <Text>Supporters: </Text>
               <Button isDisabled onClick={()=>console.log('export to csv!')}>Download responses</Button>
-            </HStack>
+            </VStack>
+            :null}
+
+
+{/*            RESULTS               */}
             <Divider/>
             <Table>
             <Thead style={{backgroundColor:'gray'}}>
@@ -154,18 +139,20 @@ export default function Stats(props) {
                 )})}
               </Tr>
             </Thead>
+            {responses?
             <Tbody>
               {responses.map(x=>{return(
                 <Tr>
-                  <Td>..{x.payload.value.key.slice(-5,-1)}</Td>
+                  <Td>..{x.key.slice(-5,-1)}</Td>
                   {formData.map(y=>{return(
-                    <Td>{x.payload.value.value[y.name].toString()}</Td>
+                    <Td>{x.value[y.name].toString()}</Td>
                   )}
 
                   )}
                 </Tr>
               )})}
             </Tbody>
+            :null}
             </Table>
         </VStack>
       }

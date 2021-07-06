@@ -8,70 +8,92 @@ import {
   Radio,
   RadioGroup,
   FormLabel,
-  IconButton,
   Checkbox,
+  Spacer,
+  Select,
   FormHelperText,
 } from '@chakra-ui/react';
-import {useSystemsContext} from './../contexts/systems';
+import {useSystemsContext} from '../contexts/systems';
 import BuilderPage from './formBuilder';
 import Output from './output';
 import {useState} from 'react';
-import { useStateMachine } from "little-state-machine";
-import GoBack from './common/goBack';
-import copyClipBoard from "../logic/copyClipBoard"
-import { CopyIcon } from '@chakra-ui/icons';
 import {useHistory} from 'react-router-dom';
+
 function CreateForm() {
-  const {
-    state: { formData = [] },
-  } = useStateMachine()
+  const [formData, setFormData] = useState([]);
   const  [ipfsNode, orbit, loading, myForms] = useSystemsContext();
   const [creation, setCreation] = useState(false);
-  const [toggleBuilder ,setToggleBuilder] = useState(true);
   const [nameForm, setNameForm ] = useState();
   const [description, setDescription ] = useState();
   const [permissions, setPermissions] = useState('public');
+  const [keyDefined, setKeyDefined] = useState('orbitdb');
   const [formCreated, setFormCreated] = useState();
+  // const [type, setType] = useState('keyvalue');
+  // const [permissionsType, setPermissionsType] = useState();
   const history = useHistory();
 
-  const dagPreparation = async (data) =>{
+  const dagPreparation = async (data, options) =>{
   // in put {pin:true} //test this!!
-    let cid = await ipfsNode.dag.put(data);
+    let cid = await ipfsNode.dag.put(data, options);
     return cid;
   }
 
-  async function createDatabase(){
+// handle databases inside the form OBJECT
+// at least, responses.. then can be comments, supporters?,
+  async function createDatabase(type, subName){
       let accessController
-      let type ='eventlog'
-      switch (permissions) {
-        case 'public':
-          accessController = { write: ['*'] }
+      let option =permissions // permissionsType?permissionsType:
+      let dbName = nameForm.concat(subName)
+
+      switch (option) {
+        case 'only':
+          accessController = {accessController:{ write: [orbit.identity.id] }}
+          break
+        case 'orbitdb':
+          accessController = {accessController:{type:'orbitdb', write: [orbit.identity.id]}}
           break
         default:
-          accessController = { write: [orbit.identity.id] }
+          accessController = {accessController:{ write: ['*']} }
           break
       }
-      const db = await orbit.create(nameForm, type, { accessController })
 
+      let db;
+      console.log('creating db with access:', accessController)
+      db = await orbit.create(dbName, type, accessController)
+
+
+      if (subName === '.supporters'){
+        db.add({key:orbit.identity.id, value:true}) // test this
+      }
+
+      console.log('created',db)
+
+      // let orbitdbAddress = db.address.toString().split('/')
       return db.address.toString();
     }
 
   async function newForm(){
     if(window.confirm('Do you want to create this form?')){
-      let responsesDbId = await createDatabase();
-      // let formDataJson = JSON.stringify(formData);// parse:error
-      const type = 'eventlog';
-      const formDataCid = await dagPreparation({formData})
-      if(responsesDbId && formDataCid){
-        let newFormObj = {name:nameForm,description:description,responses:responsesDbId, formData:formDataCid}
-        let newFormCid = await dagPreparation(newFormObj)
+      let responsesDbId = await createDatabase('keyvalue','.responses'); // forced keyvalue?
+      let supporters = await createDatabase('feed','.supporters'); // this should be a forced feed
+
+      if(responsesDbId && supporters && formData){
+        let newFormObj = {name:nameForm,
+                          keyDefined:keyDefined,
+                          description:description,
+                          responses:responsesDbId,
+                          supporters: supporters,
+                          formData:formData,
+                          created:Date.now()}
+        let newFormCid = await dagPreparation(newFormObj,{pin:true}) // DB object
 
         myForms.add({
           name:nameForm,
-          type,
-          formDataCid:newFormCid.toString(),
+          type:'docstore',
+          dbAddress:newFormCid.toString(),
           description: description,
           responses: responsesDbId,
+          supporters:supporters,
           added: Date.now()
         })
 
@@ -81,7 +103,6 @@ function CreateForm() {
         history.push('/form/'+newFormCid.toString())
 
         return newFormCid.toString();
-        // Add to DB root?
       }else{
         return 'Error'
       }
@@ -91,17 +112,14 @@ function CreateForm() {
     }
   }
 
-
   return (
       <VStack w='100%'>
-        <GoBack
-          path='/'
-        />
-        <Text fontSize='md'>Create your form</Text>
-        <Text color='red' fontSize='sm'>Remember this is unencrypted and public!</Text>
+        <Text fontSize='md'>Information about the database</Text>
           {!creation?
-          <form onSubmit={()=> setCreation(!creation)}>
-          <VStack>
+          <form onSubmit={()=> {
+            setCreation(!creation)
+          }}>
+          <VStack w='100%'>
             <FormControl id="name" isRequired>
               <FormLabel>Name</FormLabel>
               <Input type="string" onChange={e=>setNameForm(e.target.value)}/>
@@ -112,6 +130,25 @@ function CreateForm() {
               <FormLabel>Description</FormLabel>
               <Input type="string" onChange={e=>setDescription(e.target.value)}/>
               <FormHelperText>Give some extra data for your public</FormHelperText>
+            </FormControl>
+{/*
+            <FormControl id='type'>
+              <FormLabel>Type</FormLabel>
+              <Select id="type" defaultValue='keyvalue' onChange={(e)=>setType(e.target.value)}>
+                <option value="eventlog">EventLog</option>
+                <option value="eventlog">Feed</option>
+                <option value="keyvalue">Key:Value</option>
+                <option value="docstore">Docstore</option>
+                <option value="counter">Counter</option>
+                </Select>
+            </FormControl>
+*/}
+            <FormControl id='keyDefined' isRequired>
+              <FormLabel>Key</FormLabel>
+              <Select id="keyDefined" defaultValue='orbitdb' onChange={(e)=>setKeyDefined(e.target.value)}>
+                <option value="orbitdb">Orbit db Id</option>
+                <option disabled value="free">key value (free)</option>
+              </Select>
             </FormControl>
 
             <HStack>
@@ -128,51 +165,54 @@ function CreateForm() {
                   <Checkbox isDisabled/>
                 </HStack>
               </FormControl>
-
-            <FormControl id="oracle">
-              <HStack>
-                <FormLabel>Oracle</FormLabel>
-                <Checkbox isDisabled/>
-              </HStack>
-            </FormControl>
-
+              <FormControl id="oracle">
+                <HStack>
+                  <FormLabel>Oracle</FormLabel>
+                  <Checkbox isDisabled/>
+                </HStack>
+              </FormControl>
             </HStack>
+
             <FormControl  isRequired>
-              <FormLabel >Access for your form</FormLabel>
+              <FormLabel >Access for your form data</FormLabel>
               <RadioGroup value={permissions} onChange={(value)=>setPermissions(value)}>
                 <HStack spacing="24px">
                   <Radio value="public">Public</Radio>
+                  <Radio value="only">Only me</Radio>
+                  <Radio isDisabled value="access-control">Access Control</Radio>
                   <Radio isDisabled value="encrypted">Encrypted</Radio>
                   <Radio isDisabled value="whitelisted">Whitelisted</Radio>
                 </HStack>
               </RadioGroup>
+              {/*permissions === 'access-control'?
+                <VStack>
+                  <Select id="permissions" defaultValue='orbitdb' onChange={(e)=>setPermissionsType(e.target.value)}>
+                    <option value="orbitdb" >Orbit DB identity</option>
+                  </Select>
+                </VStack>
+              :null*/}
               <FormHelperText>We are working on expanding your choices!</FormHelperText>
             </FormControl>
             <Button type='submit'>Create!</Button>
           </VStack>
           </form>
           :
-          <HStack w='50%'>
+          <HStack w='100%'>
             <VStack>
+
             <BuilderPage
-              showBuilder={toggleBuilder}
-              toggleBuilder={()=>setToggleBuilder(!toggleBuilder)}
-              HomeRef='/'
-              isStatic={!toggleBuilder} // what is this???
-              defaultLang='en'
-              newForm ={newForm}
+            {...{
+              formData,
+              setFormData
+            }}
             />
+
             {formCreated?
-              <HStack>
-                <Text>{formCreated}</Text>
-                <IconButton
-                  icon={<CopyIcon />}
-                  onClick={()=>copyClipBoard('localhost:3000/#/form/'+formCreated)}
-                  />
-              </HStack>
+              <Text>{formCreated}</Text>
             :null}
 
             </VStack>
+            <Spacer />
             {formData?
               <Output
               formData={formData}
@@ -184,6 +224,8 @@ function CreateForm() {
 
           </HStack>
           }
+          <Button isDisabled={!formData.length} onClick={()=>newForm()}>Spread!</Button> {/*does not disable correctly*/}
+
           {loading?
             <VStack>
               <Text fontSize='sm'>Wait until connection is established with IPFS and OrbitDB</Text>

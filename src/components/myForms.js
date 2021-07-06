@@ -104,11 +104,10 @@ function MyForms() {
       {entries && entries.length > 0?
         <Table>
           <TableCaption placement='top'>My forms supported!</TableCaption>
-          <Divider />
           <Thead>
             <Tr key='title'>
               <Th>Name</Th>
-              <Th>Address</Th>
+{/*              <Th>Address</Th>*/}
               <Th>Functions</Th>
             </Tr>
           </Thead>
@@ -116,18 +115,18 @@ function MyForms() {
             {entries.map(x=>{return(
               <Tr key={x.hash}>
                 <Td >{x.payload.value.name}</Td>
-                <Td >{x.payload.value.formDataCid.slice(0,5)}..</Td>
+{/*                <Td >{x.payload.value.formDataCid.slice(0,5)}..</Td>*/}
                 <Td >
                   <IconButton
-                    onClick={()=>copyClipBoard('localhost:3000/#/form/'+x.payload.value.formDataCid)}
+                    onClick={()=>copyClipBoard('localhost:3000/#/form/'+x.payload.value.dbAddress)}
                     aria-label="Copy"
                     icon={<CopyIcon />} />
                   <IconButton
-                    onClick={()=>{history.push('form/'+x.payload.value.formDataCid)}}
+                    onClick={()=>{history.push('form/'+x.payload.value.dbAddress)}}
                     aria-label="Edit"
                     icon={<EditIcon />} />
                   <IconButton
-                    onClick={()=>{history.push('stats/'+x.payload.value.formDataCid)}}
+                    onClick={()=>{history.push('stats/'+x.payload.value.dbAddress)}}
                     aria-label="Stats"
                     icon={<InfoIcon />} />
                   <IconButton
