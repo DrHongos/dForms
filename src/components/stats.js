@@ -131,10 +131,10 @@ export default function Stats(props) {
             <Divider/>
             <Table>
             <Thead style={{backgroundColor:'gray'}}>
-              <Tr>
+              <Tr key='title'>
                 <Td>IPFS Node</Td>
                 {formData.map(x=>{return(
-                  <Td>{x.name}</Td>
+                  <Td key={x.name}>{x.name}</Td>
 
                 )})}
               </Tr>
@@ -142,7 +142,7 @@ export default function Stats(props) {
             {responses?
             <Tbody>
               {responses.map(x=>{return(
-                <Tr>
+                <Tr key={x.key}>
                   <Td>..{x.key.slice(-5,-1)}</Td>
                   {formData.map(y=>{return(
                     <Td>{x.value[y.name].toString()}</Td>

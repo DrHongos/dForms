@@ -1,0 +1,3 @@
+Known bugs:
+- Range and Datetime components cant create the register from hook form and they mutate an input value.
+  Both are set as required cause they require selection and post affirmation on the input field.
