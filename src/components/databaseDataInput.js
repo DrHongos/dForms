@@ -16,13 +16,13 @@ function DatabaseDataInput(props) {
 
   return (
       <VStack w='100%'>
-        <Text fontSize='md'>Information about the database</Text>
+        <Text fontSize='md'>Information of the form, keys and access</Text>
           <form onSubmit={()=> {
             props.setCreation(!props.creation)
           }}>
           <VStack w='100%'>
             <FormControl id="name" isRequired>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Title</FormLabel>
               <Input type="string" onChange={e=>props.setNameForm(e.target.value)}/>
               <FormHelperText>Let's start with a name for your form</FormHelperText>
             </FormControl>

@@ -97,21 +97,21 @@ function BuilderPage({formData, setFormData}) {
   const child = (
     <div>
       <h1 ref={form} id="main">
-        Define the structure for your database
+        Add elements to your form
       </h1>
       <div >
         <form onSubmit={handleSubmit(onSubmit)}>
           <HStack>
           <VStack>
             <HStack>
-              <label>Name: </label>
+              <label>Question: </label>
               <Input
                 autoComplete="off"
                 defaultValue={editFormData.name}
                 aria-label="name"
                 aria-invalid={errors["name"] ? "true" : "false"}
                 name="name"
-                placeholder='name'
+                placeholder='describe your field'
                 style={{
                   ...(errors["name"] ? errorStyle : null),
                 }}
@@ -140,9 +140,9 @@ function BuilderPage({formData, setFormData}) {
                 {...register('type')}
               >
                 <option value="text">Text</option>
-                <option value="select">Select</option>
+                <option value="select">Selector</option>
                 <option value="checkbox">Checkbox</option>
-                <option value="radio">Radio</option>
+                <option value="radio">Multiple choice</option>
                 <option value="number">Number</option>
                 <option value="textarea">Textarea</option>
                 <option value="email">Email</option>
@@ -171,6 +171,12 @@ function BuilderPage({formData, setFormData}) {
               editFormData.type === "radio") && (
               <>
                 <label>Options:</label>
+                {/*
+                  create a dinamic form to input the options
+
+
+
+                  */}
                 <Input
                   key={editFormData.name}
                   defaultValue={editFormData.options}

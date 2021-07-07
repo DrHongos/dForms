@@ -4,6 +4,7 @@ import {
   Button,
   Spinner,
   Spacer,
+  Divider,
 } from '@chakra-ui/react';
 import {useSystemsContext} from '../contexts/systems';
 import BuilderPage from './formBuilder';
@@ -107,7 +108,8 @@ function CreateForm() {
 
   return (
       <VStack w='100%'>
-        <Text fontSize='md'>Information about the database</Text>
+        <Text fontSize='xl'>Creating a form</Text>
+        <Divider />
           {!creation?
             <DatabaseDataInput
               creation = {creation}
