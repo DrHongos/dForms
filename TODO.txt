@@ -2,3 +2,21 @@ Known bugs:
 - Range and Datetime components cant create the register from hook form and they mutate an input value.
   Both are set as required cause they require selection and post affirmation on the input field.
 - giving a field a name with '..' inside. will break the field into {predots:{postdots:value}}
+- copy address function should notify
+- support this form should notify
+- replication check in setInterval - test this!
+- Structure is diffuse
+- add alert for replication post send the form
+- Firefox is shitty.. wtf?
+- add alert of public data in form
+
+
+#TODO
+#####################
+- add warning of 'connecting orbitdb' in the form (when not connected)
+- Add options to fields in an interactive dynamic way
+- mix the formitem component output in creation with edit/delete functionality
+- improve fields naming and visual aids
+- improve attributes in form creation
+- look for more characteristics to be attributes in a field
+- See form creation in smartphone perspective

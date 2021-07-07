@@ -30,7 +30,7 @@ function Home() {
         <HStack>
           <Button onClick={()=>history.push('create')}>Create</Button>
           <Button onClick={()=>history.push('myforms')}>Manage</Button>
-          <Button isDisabled onClick={()=>console.log('search by category, tags, location, creator, and/or ID')}>Search</Button>
+          <Button onClick={()=>history.push('search')}>Search</Button>
         </HStack>
       </VStack>
   );

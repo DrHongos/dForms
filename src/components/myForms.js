@@ -9,14 +9,12 @@ import {
   Th,
   Td,
   TableCaption,
-  Divider,
+
 } from '@chakra-ui/react';
 import {DeleteIcon, EditIcon, InfoIcon, CopyIcon } from '@chakra-ui/icons';
 import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
 import copyClipBoard from "../logic/copyClipBoard"
-import GoBack from './common/goBack';
-import FormImport from './formImport';
 function MyForms() {
   const history = useHistory();
   const  [, , , myForms, entries] = useSystemsContext();
@@ -34,11 +32,6 @@ function MyForms() {
 
   return (
     <VStack>
-      <GoBack
-        path='/'
-      />
-      <FormImport />
-      <Divider />
       {entries && entries.length > 0?
         <Table>
           <TableCaption placement='top'>My forms supported!</TableCaption>
@@ -56,8 +49,7 @@ function MyForms() {
 {/*                <Td >{x.payload.value.formDataCid.slice(0,5)}..</Td>*/}
                 <Td >
                   <IconButton
-                    onClick={()=>copyClipBoard('localhost:3000/#/form/'+x.payload.value.dbAddress)}
-                    aria-label="Copy"
+                    onClick={()=>copyClipBoard('https://still-hall-4364.on.fleek.co/#/form/'+x.payload.value.dbAddress)}                    aria-label="Copy"
                     icon={<CopyIcon />} />
                   <IconButton
                     onClick={()=>{history.push('form/'+x.payload.value.dbAddress)}}
