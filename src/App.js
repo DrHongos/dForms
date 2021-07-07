@@ -13,7 +13,6 @@ import CreateForm from './components/create';
 import Output from './components/output';
 import Stats from './components/stats';
 import MyForms from './components/myForms';
-import {StateMachineProvider} from "little-state-machine";
 function App() {
   return (
     <ChakraProvider theme={theme}>
@@ -23,9 +22,7 @@ function App() {
           <VStack spacing={8}>
           <Switch>
             <Route path='/create'>
-              <StateMachineProvider>
                 <CreateForm />
-              </StateMachineProvider>
             </Route>
             <Route path='/form/:formCID'>
               <Output
@@ -36,7 +33,7 @@ function App() {
               <Stats />
             </Route>
             <Route exact path='/myforms'>
-            <MyForms />
+              <MyForms />
             </Route>
 
             <Route exact path='/'>

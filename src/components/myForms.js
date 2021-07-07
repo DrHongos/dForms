@@ -10,26 +10,16 @@ import {
   Td,
   TableCaption,
   Divider,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  Input,
-  HStack,
-  Button,
 } from '@chakra-ui/react';
 import {DeleteIcon, EditIcon, InfoIcon, CopyIcon } from '@chakra-ui/icons';
 import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
 import copyClipBoard from "../logic/copyClipBoard"
 import GoBack from './common/goBack';
-import {useState} from 'react';
-
+import FormImport from './formImport';
 function MyForms() {
   const history = useHistory();
-  const  [ipfsNode, , , myForms, entries] = useSystemsContext();
-  const [searchAddress, setSearchAddress] = useState();
-  const [formFound, setFormFound] = useState();
-
+  const  [, , , myForms, entries] = useSystemsContext();
 
   const removeDatabase = async (hash) => {
     if(window.confirm("Do you really want to unsupport this form?")){
@@ -41,65 +31,13 @@ function MyForms() {
     // react to the entries change.. (refresh?)
   }
 
-  async function searchForm(){
-    console.log('searching for ',searchAddress)
-    try{
-      for await (const result of ipfsNode.cat(searchAddress)) {
-        if(result.name && result.description && result.responses){
-          console.log(result)
-          setFormFound(result)
-          return result
-        }else{
-          return 'error'
-        }
-      }
-    }catch{
-      setFormFound()
-    }
-
-  }
 
   return (
     <VStack>
       <GoBack
         path='/'
       />
-      <FormControl id="importDB" isRequired>
-        <HStack>
-          <FormLabel>Address</FormLabel>
-          <Input type="string" onChange={e=>setSearchAddress(e.target.value)} placeholder='bafyr..'/>
-          <Button onClick={()=>searchForm()}>Find</Button>
-        </HStack>
-        <FormHelperText>Search for forms to answer & support!</FormHelperText>
-      </FormControl>
-      {formFound?
-        <Table>
-          <TableCaption placement='top'>Form found!</TableCaption>
-          <Thead>
-            <Tr>
-              <Th>Name</Th>
-              <Th>Description</Th>
-              <Th>Functions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr>
-              <Td>{formFound.name}</Td>
-              <Td>{formFound.description}</Td>
-              <Td>
-                <IconButton
-                  onClick={()=>{history.push('form/'+searchAddress)}}
-                  aria-label="Edit"
-                  icon={<EditIcon />} />
-                <IconButton
-                  onClick={()=>{history.push('stats/'+searchAddress)}}
-                  aria-label="Stats"
-                  icon={<InfoIcon />} />
-              </Td>
-            </Tr>
-          </Tbody>
-        </Table>
-      :null}
+      <FormImport />
       <Divider />
       {entries && entries.length > 0?
         <Table>

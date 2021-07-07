@@ -53,10 +53,6 @@ export default function Output(props) {
   const [prevResponse, setPrevResponse] = React.useState();
   const history = useHistory();
 
-  // const getPublicKey = async () =>{
-  //   let ipfsId = await ipfsNode.id();
-  //   return ipfsId.publicKey;
-  // }
 
   React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(!props.isCreation && ipfsNode){        // this gots into trouble
@@ -141,6 +137,12 @@ const formElement = (item) => {
         </FormErrorMessage>
       </FormControl>
     )
+    case 'text_field':
+    return (
+      <Text fontSize='md'>
+        {item.name}
+      </Text>
+    )
     case 'textarea':
     return (
       <FormControl key={item.name} isInvalid={errors.name} isRequired={item.required}>
@@ -183,7 +185,7 @@ const formElement = (item) => {
       <FormControl key={item.name} isRequired={item.required}>
         <FormLabel>{item.name }</FormLabel>
         <Checkbox
-        defaultValue = {prevResponse?prevResponse[item.name]:''}
+        defaultValue = {prevResponse?prevResponse[item.name]:false}
         {...register(`${item.name}`, {
           required: item.required,
           pattern:item.pattern
@@ -212,8 +214,11 @@ const formElement = (item) => {
     return (
       <FormControl key={item.name} id={item.name} isRequired={item.required}>
         <FormLabel>{item.name}</FormLabel>
-        <NumberInput> {/*breaks on register -  max={item.max?item.max:100} min={item.min?item.min:0}*/}
-          <NumberInputField {...register(`${item.name}`, {
+        <NumberInput
+          defaultValue = {prevResponse && prevResponse[item.name]?parseFloat(prevResponse[item.name]):0}
+          > {/*breaks on register -  max={item.max?item.max:100} min={item.min?item.min:0}*/}
+          <NumberInputField
+            {...register(`${item.name}`, {
             required: item.required,
             max:item.max,
             min:item.min,
@@ -235,30 +240,32 @@ const formElement = (item) => {
         isRequired={item.required}
         >
         <FormLabel>{item.name}</FormLabel>
-        <Slider
-          min={minimum}
-          max={maximum}
-          defaultValue = {prevResponse?prevResponse[item.name]:minimum}
-          onChangeEnd={(value) => {
-            let interf = document.getElementById(item.name.concat('_range'))
-            interf.value = value
-          }}
-          >
-          <SliderTrack
-          bg="red.100">
-            <Box position="relative" right={10} />
-            <SliderFilledTrack bg="tomato" />
-          </SliderTrack>
-          <SliderThumb boxSize={6}></SliderThumb>
-        </Slider>
+        <HStack>
+          <Slider
+            min={minimum}
+            max={maximum}
+            defaultValue = {prevResponse?prevResponse[item.name]:minimum}
+            onChangeEnd={(value) => {
+              let interf = document.getElementById(item.name.concat('_range'))
+              interf.value = value
+            }}
+            >
+            <SliderTrack
+            bg="red.100">
+              <Box position="relative" right={10} />
+              <SliderFilledTrack bg="tomato" />
+            </SliderTrack>
+            <SliderThumb boxSize={6}></SliderThumb>
+          </Slider>
 
-        <Input id={item.name.concat('_range')} onChange={(data)=>console.log(data)}
-          defaultValue = {prevResponse?prevResponse[item.name]:''}
-          {...register(`${item.name}`, {
-            max:item.max,
-            min:item.min,
-          required: true
-        })}></Input>
+          <Input isReadOnly id={item.name.concat('_range')} onChange={(data)=>console.log(data)}
+            defaultValue = {prevResponse?prevResponse[item.name]:''}
+            {...register(`${item.name}`, {
+              max:item.max,
+              min:item.min,
+            required: true
+          })}></Input>
+        </HStack>
 
       </FormControl>
     );
@@ -284,18 +291,21 @@ const formElement = (item) => {
       return (
         <FormControl id={item.name} isRequired={item.required} key={item.name}>
           <FormLabel>{item.name}</FormLabel>
-          <DatePicker
-            placeholderText='Select date'
-            onChange={(date) => {
-              let inputElement = document.getElementById(item.name.concat('_selected'))
-              inputElement.value = date.toISOString() //actually should be timestamp.. then frontend converts to local
-            }}
-            />
-          <Input id={item.name.concat('_selected')} onChange={(data)=>console.log(data)}
-            defaultValue = {prevResponse?prevResponse[item.name]:''}
-            {...register(`${item.name}`, {
-            required: true
-          })}></Input>
+          <HStack>
+            <DatePicker
+              placeholderText='Select date'
+              onChange={(date) => {
+                let inputElement = document.getElementById(item.name.concat('_selected'))
+                inputElement.value = date.toISOString() //actually should be timestamp.. then frontend converts to local
+              }}
+              />
+              {/* inputElement.innerHTML = date.toISOString()*/}
+            <Input isReadOnly id={item.name.concat('_selected')} onChange={(data)=>console.log(data)}
+              defaultValue = {prevResponse?prevResponse[item.name]:''}
+              {...register(`${item.name}`, {
+              required: true
+            })}></Input>
+        </HStack>
         </FormControl>
 
        );
@@ -315,8 +325,8 @@ const formElement = (item) => {
         :
         <form onSubmit={handleSubmit(onSubmit, onError)}>
           <VStack>
-            <Text  fontSize='md'>{formObject?.name?formObject.name:props.formName}</Text>
-            <Text  fontSize='sm'>{formObject?.description?formObject.description:props.formDescription}</Text>
+            <Text  fontSize='xl'>{formObject?.name?formObject.name:props.formName}</Text>
+            <Text  fontSize='lg' as='i'>{formObject?.description?formObject.description:props.formDescription}</Text>
           </VStack>
           <VStack>
           {formData && formData.length > 0?

@@ -24,15 +24,12 @@ export default function Stats(props) {
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(true);
   const [formCid, setFormCid] = React.useState();
-  const [formDataR, setFormDataR] = React.useState();
   const [formObject, setFormObject] = React.useState();
-  // const [responsesDB, setResponsesDB] = React.useState();
+  const [formDataFiltered, setFormDataFiltered] = React.useState();
   const [responses, setResponses] = React.useState([]);
-  // const [supportersDB, setSupportersDB] = React.useState();
   const [supported, setSupported] = React.useState();
 
   const getEntriesKeys = (object) =>{return Object.keys(object)}
-
 
   React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(ipfsNode){        // this gots into trouble
@@ -46,8 +43,16 @@ export default function Stats(props) {
         //Read responses? create instance of DB
         if(formObj){
           setFormObject(formObj)
-          setFormDataR(formObj.formData)
+          // setFormDataR(formObj.formData)
           //
+          let filteredData = formObj.formData.filter(x =>{
+            return !x.type.endsWith('_field')
+          }
+          )
+          setFormDataFiltered(filteredData)
+          console.log('formData', formObj.formData)
+          console.log('filtered', formDataFiltered)
+
           let support = await isSupported(formObj.responses, myForms)
           setSupported(support)
 // GET DATABASE OBJECT AND DATA
@@ -74,15 +79,6 @@ export default function Stats(props) {
         setLoading(false)
       }
   },[formCID, ipfsNode, orbit, myForms])// eslint-disable-line react-hooks/exhaustive-deps
-
-
-// switch for different elements possible in formData,
-  let formData
-  if(props.isCreation){
-    formData = props.formData;
-  }else{
-    formData = formDataR
-  }
 
   return (
     <Stack>
@@ -121,7 +117,6 @@ export default function Stats(props) {
             <VStack>
               <Text>Responses: {responses.length}</Text>
               <Text>Replication status: </Text>
-              <Text>Supporters: </Text>
               <Button isDisabled onClick={()=>console.log('export to csv!')}>Download responses</Button>
             </VStack>
             :null}
@@ -131,20 +126,22 @@ export default function Stats(props) {
             <Divider/>
             <Table>
             <Thead style={{backgroundColor:'gray'}}>
+              {formDataFiltered?
               <Tr key='title'>
                 <Td>IPFS Node</Td>
-                {formData.map(x=>{return(
+                {formDataFiltered.map(x=>{return(
                   <Td key={x.name}>{x.name}</Td>
 
                 )})}
               </Tr>
+              :null}
             </Thead>
-            {responses?
+            {responses && formDataFiltered?
             <Tbody>
               {responses.map(x=>{return(
                 <Tr key={x.key}>
                   <Td>..{x.key.slice(-5,-1)}</Td>
-                  {formData.map(y=>{return(
+                  {formDataFiltered.map(y=>{return( // ignore '_fields' fields!
                     <Td>{x.value[y.name].toString()}</Td>
                   )}
 

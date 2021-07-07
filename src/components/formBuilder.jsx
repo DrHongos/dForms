@@ -148,9 +148,10 @@ function BuilderPage({formData, setFormData}) {
                 <option value="email">Email</option>
                 <option value="range">Range</option>
                 <option value="datetime">datetime</option>
-                <option value="text field" disabled>text field (no question)</option>
-                <option value="file field" disabled>file field (no question)</option>
-                <option value="video field" disabled>video field (no question)</option>
+                <option value="upload" disabled>datetime</option>
+                <option value="text_field">text field (no question)</option>
+                <option value="file_field" disabled>file field (no question)</option>
+                <option value="video_field" disabled>video field (no question)</option>
                 <option value="search" disabled>Search</option>
                 <option value="tel" disabled>Tel</option>
                 <option value="url" disabled>url</option>
