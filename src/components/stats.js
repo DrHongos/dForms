@@ -38,8 +38,8 @@ export default function Stats(props) {
         //Read responses? create instance of DB
         if(formObj){
           setFormObject(formObj)
-          // setFormDataR(formObj.formData)
-          //
+
+          // filtered data is needed to separate question and structure components
           let filteredData = formObj.formData.filter(x =>{
             return !x.type.endsWith('_field')
           }
