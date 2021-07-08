@@ -16,29 +16,24 @@ import {
 import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
 import {getDB, getFormData, addSupport, isSupported} from '../logic/databases';
-import GoBack from './common/goBack';
 import {CheckIcon} from '@chakra-ui/icons';
 
 export default function Stats(props) {
   const  [ipfsNode, orbit, , myFormsDB,myForms] = useSystemsContext();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(true);
-  const [formCid, setFormCid] = React.useState();
   const [formObject, setFormObject] = React.useState();
   const [formDataFiltered, setFormDataFiltered] = React.useState();
   const [responses, setResponses] = React.useState([]);
   const [supported, setSupported] = React.useState();
 
   const getEntriesKeys = (object) =>{return Object.keys(object)}
+  const getFormCid = (formCID) => {return formCID.split('/form/')}
 
   React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(ipfsNode){        // this gots into trouble
         setLoading(true)
-
-        let cid = formCID.split('/form/')
-        setFormCid(cid)
-
-        let formObj = await getFormData(ipfsNode, cid)
+        let formObj = await getFormData(ipfsNode, getFormCid(formCID))
         // console.log('formobj',formObj)
         //Read responses? create instance of DB
         if(formObj){
@@ -50,8 +45,8 @@ export default function Stats(props) {
           }
           )
           setFormDataFiltered(filteredData)
-          console.log('formData', formObj.formData)
-          console.log('filtered', formDataFiltered)
+          // console.log('formData', formObj.formData)
+          // console.log('filtered', formDataFiltered)
 
           let support = await isSupported(formObj.responses, myForms)
           setSupported(support)
@@ -64,9 +59,9 @@ export default function Stats(props) {
             setResponses([...resp])
           }else if(db && db.type==='keyvalue'){
             resp = await db.all
-            console.log('resp',resp)
+            // console.log('resp',resp)
             let respKeys = getEntriesKeys(resp)
-            console.log('flattened',respKeys)
+            // console.log('flattened',respKeys)
             let flattened = respKeys.reduce((total, currentValue) => total.concat({key:currentValue, value:resp[currentValue]}), []);
             setResponses(flattened)
           }else if(db){ // feed, docstore and counter (or customs)
@@ -82,10 +77,6 @@ export default function Stats(props) {
 
   return (
     <Stack>
-      <GoBack
-        path='/'
-      />
-
       {loading?
         <VStack>
           <Spinner />
@@ -110,7 +101,7 @@ export default function Stats(props) {
               <CheckIcon />
               </HStack>
               :
-              <Button onClick={()=>{addSupport(myFormsDB, 'keyvalue', formObject, formCid)}}>Support this form!</Button>
+              <Button onClick={()=>{addSupport(myFormsDB, 'keyvalue', formObject, getFormCid(formCID))}}>Support this form!</Button>
             }
 {/*       STATS AND OPERATIONS OVER THE DB SHARED        */}
             {responses?

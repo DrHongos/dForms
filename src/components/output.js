@@ -31,7 +31,6 @@ import {
 import {useSystemsContext} from './../contexts/systems';
 import {useParams} from 'react-router-dom';
 import {getDB, getFormData, addSupport, isSupported} from '../logic/databases';
-import GoBack from './common/goBack';
 import {useHistory} from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // needed!!!
@@ -45,7 +44,6 @@ export default function Output(props) {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(false);
-  const [formCid, setFormCid] = React.useState();
   const [formDataR, setFormDataR] = React.useState();
   const [supported, setSupported] = React.useState();
   const [formObject, setFormObject] = React.useState();
@@ -53,20 +51,19 @@ export default function Output(props) {
   const [prevResponse, setPrevResponse] = React.useState();
   const history = useHistory();
 
+  const getFormCid = (formCID) => {return formCID.split('/form/')}
 
   React.useEffect(async ()=>{// eslint-disable-line react-hooks/exhaustive-deps
       if(!props.isCreation && ipfsNode){        // this gots into trouble
         setLoading(true)
 
-        let cid = formCID.split('/form/')
-        setFormCid(cid)
-
-        let formObj = await getFormData(ipfsNode, cid)
+        let formObj = await getFormData(ipfsNode, getFormCid(formCID))
         // console.log(formObj)
         //Read responses? create instance of DB
         if(formObj){
           setFormObject(formObj)
           setFormDataR(formObj.formData)
+
           let support = await isSupported(formObj.responses, myForms)
           setSupported(support)
 
@@ -90,11 +87,10 @@ export default function Output(props) {
 
   const onSubmit =async (data) => {
     // send a log to the responses DB (keyvalue)
-    // here! checkout if prev responses to update!
     console.log(data)
     if(data){
       await dB.put(orbit.id,data)
-      history.push('/stats/'+formCid)
+      history.push('/stats/'+getFormCid(formCID))
     }else{
       console.log('answer the damn form!')
     }
@@ -299,7 +295,6 @@ const formElement = (item) => {
                 inputElement.value = date.toISOString() //actually should be timestamp.. then frontend converts to local
               }}
               />
-              {/* inputElement.innerHTML = date.toISOString()*/}
             <Input isReadOnly id={item.name.concat('_selected')} onChange={(data)=>console.log(data)}
               defaultValue = {prevResponse?prevResponse[item.name]:''}
               {...register(`${item.name}`, {
@@ -337,20 +332,24 @@ const formElement = (item) => {
               <Divider />
             </VStack>
           :null}
-          {!props.isCreation && dB?
+          {!props.isCreation?
             <HStack>
-              <GoBack
-                path='/'
-              />
-              {supported?
+              {supported && dB?
               <Text>Supported!</Text>
               :
-              <Button onClick={()=>addSupport(myFormsDB, 'keyvalue', formObject, formCid)}>Support this form!</Button>
+              <Button onClick={()=>addSupport(myFormsDB, 'keyvalue', formObject, getFormCid(formCID))}>Support this form!</Button>
               }
-              <Button isDisabled={!formObject.responses} type='submit'>Send!</Button>
+              {dB?
+                <Button isDisabled={!formObject.responses} type='submit'>Send!</Button>
+              :
+              <Text>
+                Wait your node to connect
+              </Text>
+            }
             </HStack>
-            :null}
-            {/*      await db.add({key:key,value:ipfsCid.string})*/}
+            :
+            null
+          }
             </VStack>
         </form>
       }
