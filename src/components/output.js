@@ -123,9 +123,6 @@ const formElement = (item) => {
           {...register(`${item.name}`, {
             required: item.required,
             maxLength:item.maxLength ,
-            max:item.max,
-            min:item.min,
-            pattern:item.pattern
           })}
         />
         <FormErrorMessage>
@@ -150,7 +147,6 @@ const formElement = (item) => {
           {...register(`${item.name}`, {
             required: item.required?true:false,
             maxLength:item.maxLength?item.maxLength:128 ,
-            pattern:item.pattern?item.pattern:null
           })}
         />
         <FormErrorMessage>
@@ -168,7 +164,6 @@ const formElement = (item) => {
         placeholder={item.name}
         {...register(`${item.name}`, {
           required: item.required,
-          pattern:item.pattern
         })}>
           {optionsSelect.map(x=>{return(
             <option value={x} key={x}>{x}</option>
@@ -184,7 +179,6 @@ const formElement = (item) => {
         defaultValue = {prevResponse?prevResponse[item.name]:false}
         {...register(`${item.name}`, {
           required: item.required,
-          pattern:item.pattern
         })}
          />
       </FormControl>
@@ -274,9 +268,6 @@ const formElement = (item) => {
           type="email" {...register(`${item.name}`, {
             required: item.required,
             maxLength:item.maxLength ,
-            max:item.max,
-            min:item.min,
-            pattern:item.pattern
           })} />
         <FormHelperText>dont enter your email. This is a public and open database!</FormHelperText>
       </FormControl>

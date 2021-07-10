@@ -49,7 +49,7 @@ function MyForms() {
 {/*                <Td >{x.payload.value.formDataCid.slice(0,5)}..</Td>*/}
                 <Td >
                   <IconButton
-                    onClick={()=>copyClipBoard('https://still-hall-4364.on.fleek.co/#/form/'+x.payload.value.dbAddress)}                    aria-label="Copy"
+                    onClick={()=>copyClipBoard('dforms.eth.link/#/form/'+x.payload.value.dbAddress)}                    aria-label="Copy"
                     icon={<CopyIcon />} />
                   <IconButton
                     onClick={()=>{history.push('form/'+x.payload.value.dbAddress)}}
