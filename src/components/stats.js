@@ -135,7 +135,6 @@ export default function Stats(props) {
                   {formDataFiltered.map(y=>{return( // ignore '_fields' fields!
                     <Td>{x.value[y.name].toString()}</Td>
                   )}
-
                   )}
                 </Tr>
               )})}

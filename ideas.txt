@@ -1,0 +1,15 @@
+dforms:
+
+multi signature nft!
+(RG signatures on my badge)
+(People signing a proposal, government solicite, etc)
+(Team signs a bail NFT or somethin')
+
+-mechanics:
+NFT tokenURI points to a DDB (or ipns?) where signatures are stored, could be verified or not.
+not necessary if people sign the answers (and a multicall verifies them)
+
+
+opinologo:
+
+Create predictions on dforms (use conditional tokens)

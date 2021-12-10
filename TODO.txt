@@ -7,6 +7,7 @@ Known bugs:
 - Firefox is shitty.. wtf?
 - POST error (502) calling a preload node with harcoded v0 attr and a v1 address
 - Test rendezvous node.. maybe cutting off the public ones
+- Each new deploy will create a new content hash that the ENS resolver should update... (with a tx!)
 
 #TODO
 #####################
@@ -15,7 +16,7 @@ Known bugs:
 - support this form should notify
 - add alert of public data in form
 - add alert for replication post send the form (replication status in stats (own response))
-  -create modal that explains descentralization while it waits for it.. only after successful replication should send you to the stats 
+  -create modal that explains descentralization while it waits for it.. only after successful replication should send you to the stats
 - Add options to fields in an interactive dynamic way
 - mix the formitem component output in creation with edit/delete functionality
 - improve fields naming and visual aids

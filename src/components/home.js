@@ -8,7 +8,7 @@ import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
 import {CheckCircleIcon} from '@chakra-ui/icons';
 function Home() {
-
+  const users = 1;
   const  [,, loading,] = useSystemsContext();
   const history = useHistory();
   return (
@@ -22,10 +22,13 @@ function Home() {
             <Spinner style={{color:'green'}}/>
           </HStack>
           :
-          <HStack>
-            <Text fontSize='sm'>Connected IPFS and OrbitDB</Text>
-            <CheckCircleIcon style={{color:'green'}}/>
-          </HStack>
+          <>
+            <HStack>
+              <Text fontSize='sm'>Connected IPFS and OrbitDB</Text>
+              <CheckCircleIcon style={{color:'green'}}/>
+            </HStack>
+            <Text fontSize='sm'>Users connected {users}</Text>
+          </>
         }
         <HStack>
           <Button onClick={()=>history.push('create')}>Create</Button>
