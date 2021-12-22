@@ -37,7 +37,7 @@ export const addSupport = async(myForms, type, formObject, formCid)=>{
     added: Date.now()
   })
   // add orbitdb Id to supportersDB!
-  console.log('added!')
+  console.log(formObject.name,' added!')
 }
 
 export const isSupported = async (id, myForms) => {

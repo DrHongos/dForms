@@ -131,9 +131,9 @@ export default function Stats(props) {
             <Tbody>
               {responses.map(x=>{return(
                 <Tr key={x.key}>
-                  <Td>..{x.key.slice(-5,-1)}</Td>
+                  <Td key={x.key}>..{x.key.slice(-5,-1)}</Td>
                   {formDataFiltered.map(y=>{return( // ignore '_fields' fields!
-                    <Td>{x.value[y.name].toString()}</Td>
+                    <Td key={x.key+'-'+y.name}>{x.value[y.name].toString()}</Td>
                   )}
                   )}
                 </Tr>

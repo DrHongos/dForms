@@ -12,14 +12,17 @@ import Output from './output';
 import DatabaseDataInput from './databaseDataInput';
 import {useState} from 'react';
 import {useHistory} from 'react-router-dom';
+const Web3 = require('web3');
 
 function CreateForm() {
   const [formData, setFormData] = useState([]);
-  const  [ipfsNode, orbit, loading, myForms] = useSystemsContext();
+  const [ipfsNode, orbit, loading, myForms] = useSystemsContext();
   const [creation, setCreation] = useState(false);
   const [nameForm, setNameForm ] = useState();
   const [description, setDescription ] = useState();
   const [keyDefined, setKeyDefined] = useState('orbitdb');
+  const [pohControl, setPohControl] = useState(false);
+  const web3Provider = new Web3(window.ethereum);
   // const [permissions, setPermissions] = useState('public');
   // const [type, setType] = useState('keyvalue');
   const history = useHistory();
@@ -39,13 +42,22 @@ function CreateForm() {
       let accessController
       let option =permissions // permissionsType?permissionsType:permissions
       let dbName = nameForm.concat(subName)
-
+      if(pohControl){
+        option = 'poh';
+      }
       switch (option) {
         case 'only':
           accessController = {accessController:{ write: [orbit.identity.id] }}
           break
         case 'orbitdb':
           accessController = {accessController:{type:'orbitdb', write: [orbit.identity.id]}}
+          break
+        case 'poh':
+          accessController = {accessController:{
+            type: 'ProofOfHumanity',
+            ipfs: ipfsNode,
+            web3: web3Provider
+          }}
           break
         default:
           accessController = {accessController:{ write: ['*']} }
@@ -55,7 +67,6 @@ function CreateForm() {
       let db;
       console.log('creating db with access:', accessController)
       db = await orbit.create(dbName, type, accessController)
-
 
       if (subName === '.supporters'){
         db.add({key:orbit.identity.id, value:true}) // test this
@@ -106,6 +117,10 @@ function CreateForm() {
     }
   }
 
+  function changePohControl(){
+    setPohControl(!pohControl);
+  }
+
   return (
       <VStack w='100%'>
         <Text fontSize='xl'>Creating a form</Text>
@@ -118,21 +133,20 @@ function CreateForm() {
               setDescription = {setDescription}
               setKeyDefined = {setKeyDefined}
               setType = {false}
+              setPohControl = {changePohControl}
               permissions = {permissions}
-              setPermissions = {false}
+              setPermissions = {false} // error in databaseDataInput (setPermissions is overriden in state)
               setPermissionsType = {false}
-              TODO = {false}
+              TODO = {true}
             />
           :
           <HStack w='100%'>
             <VStack>
-
-            <BuilderPage
-            {...{
-              formData,
-              setFormData
-            }} />
-
+              <BuilderPage
+              {...{
+                formData,
+                setFormData
+              }} />
             </VStack>
             <Spacer />
             {formData?

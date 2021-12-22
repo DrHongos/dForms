@@ -68,7 +68,7 @@ function DatabaseDataInput(props) {
               <FormControl id="humans">
                 <HStack>
                   <FormLabel>Only humans</FormLabel>
-                  <Checkbox isDisabled/>
+                  <Checkbox onChange={() => props.setPohControl()}/>
                 </HStack>
               </FormControl>
               <FormControl id="oracle">

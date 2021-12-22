@@ -36,12 +36,14 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // needed!!!
 // CSS Modules, react-datepicker-cssmodules.css
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
-
-
+import { useWeb3Context } from '../contexts/Web3Context';
+const Web3 = require('web3');
 
 export default function Output(props) {
+  const web3 = new Web3(Web3.givenProvider || 'ws://some.local-or-remote.node:8546');
   const  [ipfsNode, orbit, , myFormsDB, myForms] = useSystemsContext();
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const { account, providerChainId, loadingWeb3, connectWeb3} = useWeb3Context();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(false);
   const [formDataR, setFormDataR] = React.useState();
@@ -77,7 +79,6 @@ export default function Output(props) {
               // fill the fields. change the oplog? (it handles well alone)
             }
           }
-
         }else{
           setFormObject({})
         }
@@ -85,11 +86,23 @@ export default function Output(props) {
       }
   },[formCID, ipfsNode, props.isCreation, orbit]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const createSignedMessage = async () => {
+    let signedMessage = web3.eth.personal.sign("Account verification", account, "pass")
+    return signedMessage;
+  }
+
   const onSubmit =async (data) => {
     // send a log to the responses DB (keyvalue)
     console.log(data)
     if(data){
-      await dB.put(orbit.id,data)
+      let k;
+      if(dB?.access?.contractAddress?.length){
+          //create signed message
+          k = await createSignedMessage();
+      }else{
+        k = orbit.id;
+      }
+      await dB.put(k,data)
       history.push('/stats/'+getFormCid(formCID))
     }else{
       console.log('answer the damn form!')

@@ -11,17 +11,18 @@ Known bugs:
 
 #TODO
 #####################
-
-- copy address function should notify
-- support this form should notify
-- add alert of public data in form
-- add alert for replication post send the form (replication status in stats (own response))
-  -create modal that explains descentralization while it waits for it.. only after successful replication should send you to the stats
+- Create toasts for functionality
+  - copy address function should notify
+  - support this form should notify
+  - add alert for replication post send the form (replication status in stats (own response))
+    -create modal that explains descentralization while it waits for it.. only after successful replication should send you to the stats
+- improve tools & attributes in form creation
+- improve fields naming and visual aids
 - Add options to fields in an interactive dynamic way
 - mix the formitem component output in creation with edit/delete functionality
-- improve fields naming and visual aids
-- improve attributes in form creation
 - look for more characteristics to be attributes in a field
+
 - See form creation in smartphone perspective
+- add alert of public data in form
 - Show, analyze responses
 - Download results

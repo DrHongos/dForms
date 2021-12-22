@@ -6,10 +6,12 @@ import {
 } from '@chakra-ui/react';
 import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
+import {useWeb3Context} from '../contexts/Web3Context';
 import {CheckCircleIcon} from '@chakra-ui/icons';
+
 function Home() {
-  const users = 1;
-  const  [,, loading,] = useSystemsContext();
+  const  [,, loading,,peers] = useSystemsContext();
+  const { account, providerChainId, loadingWeb3, connectWeb3} = useWeb3Context();
   const history = useHistory();
   return (
       <VStack>
@@ -27,7 +29,15 @@ function Home() {
               <Text fontSize='sm'>Connected IPFS and OrbitDB</Text>
               <CheckCircleIcon style={{color:'green'}}/>
             </HStack>
-            <Text fontSize='sm'>Users connected {users}</Text>
+            {!account?
+              <Button onClick={()=>connectWeb3()}>Connect wallet</Button>
+              :
+              <div>
+                {account}
+                <Button onClick={()=>console.log('todo!')}>Disconnect</Button>
+              </div>
+            }
+            <Text fontSize='sm'>Users connected {peers?peers.length:0}</Text>
           </>
         }
         <HStack>
