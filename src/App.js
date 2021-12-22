@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import Header from './components/header';
 import Home from './components/home';
 import CreateForm from './components/create';
 import Output from './components/output';
@@ -23,6 +24,7 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       <Box textAlign="center" fontSize="xl">
+        <Header />
         <Grid minH="100vh" p={3}>
           <HStack>
             <GoBack

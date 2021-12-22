@@ -9,12 +9,12 @@ import {
   Th,
   Td,
   TableCaption,
-
 } from '@chakra-ui/react';
 import {DeleteIcon, EditIcon, InfoIcon, CopyIcon } from '@chakra-ui/icons';
 import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
 import copyClipBoard from "../logic/copyClipBoard"
+
 function MyForms() {
   const history = useHistory();
   const  [, , , myForms, entries] = useSystemsContext();

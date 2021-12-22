@@ -9,6 +9,12 @@ const copy = (str) => {
   el.select()
   document.execCommand("copy")
   document.body.removeChild(el)
-  toast.success('Copied URL to clipboard');
+  toast.success(`Copied\n${el.value}\n to clipboard`, {
+    style: {
+      border: '1px solid #713200',
+      padding: '16px',
+      color: '#713200',
+    },
+  });
 }
 export default copy;
