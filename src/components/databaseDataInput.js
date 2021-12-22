@@ -64,11 +64,10 @@ function DatabaseDataInput(props) {
                   <Checkbox isDisabled/>
                 </HStack>
               </FormControl>
-
-              <FormControl id="humans">
+              <FormControl id="encrypted">
                 <HStack>
-                  <FormLabel>Only humans</FormLabel>
-                  <Checkbox onChange={() => props.setPohControl()}/>
+                  <FormLabel>Encrypted data</FormLabel>
+                  <Checkbox isDisabled onChange={() => props.setPohControl()}/>
                 </HStack>
               </FormControl>
               <FormControl id="oracle">
@@ -87,9 +86,9 @@ function DatabaseDataInput(props) {
                 <HStack spacing="24px">
                   <Radio value="public">Public</Radio>
                   <Radio value="only">Only me</Radio>
-                  <Radio isDisabled value="access-control">Access Control</Radio>
-                  <Radio isDisabled value="encrypted">Encrypted</Radio>
+                  <Radio value="poh">Proof of humanity</Radio>
                   <Radio isDisabled value="whitelisted">Whitelisted</Radio>
+                  <Radio isDisabled value="daohaus">DaoHaus members</Radio>
                 </HStack>
               </RadioGroup>
               {props.permissions === 'access-control'?

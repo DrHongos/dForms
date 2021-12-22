@@ -9,6 +9,7 @@ import {
 import { ethers } from "ethers";
 import Web3Modal, { IProviderOptions } from "web3modal";
 import Web3 from "web3";
+import toast from "react-hot-toast";
 
 const networkNames = {
   1: "ETH Mainnet",
@@ -137,7 +138,23 @@ const Web3ContextProvider: React.FC = ({ children }) => {
     modalProvider.on("accountsChanged", async (newAcc: string[]) =>
       setWeb3State(prev => ({ ...prev, account: newAcc[0] }))
     );
+    toast.success('Web3 connected!')
   }, [setProvider]);
+
+  const disconnectWeb3 = useCallback(async () => {
+    await web3Modal.clearCachedProvider();
+    setWeb3State(prev => ({ account: null, provider: null, providerChainId:null }))
+    toast('Disconnected!',
+      {
+        icon: '👏',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      }
+    );
+  })
 
   useEffect(() => {
     if (window.ethereum) window.ethereum.autoRefreshOnNetworkChange = false;
@@ -146,7 +163,7 @@ const Web3ContextProvider: React.FC = ({ children }) => {
 
   return (
     <Web3Context.Provider
-      value={{ account, providerChainId, provider, loading, connectWeb3 }}
+      value={{ account, providerChainId, provider, loading, connectWeb3, disconnectWeb3 }}
     >
       {children}
     </Web3Context.Provider>

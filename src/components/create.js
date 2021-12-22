@@ -23,7 +23,7 @@ function CreateForm() {
   const [keyDefined, setKeyDefined] = useState('orbitdb');
   const [pohControl, setPohControl] = useState(false);
   const web3Provider = new Web3(window.ethereum);
-  // const [permissions, setPermissions] = useState('public');
+  const [permissions, setPermissions] = useState('public');
   // const [type, setType] = useState('keyvalue');
   const history = useHistory();
 
@@ -33,7 +33,7 @@ function CreateForm() {
     return cid;
   }
 
-  let permissions = 'public';
+  // let permissions = 'public';
 
 // handle databases inside the form OBJECT
 // at least, responses.. then can be comments, supporters?,
@@ -42,9 +42,9 @@ function CreateForm() {
       let accessController
       let option =permissions // permissionsType?permissionsType:permissions
       let dbName = nameForm.concat(subName)
-      if(pohControl){
-        option = 'poh';
-      }
+      // if(pohControl){
+      //   option = 'poh';
+      // }
       switch (option) {
         case 'only':
           accessController = {accessController:{ write: [orbit.identity.id] }}
@@ -131,12 +131,12 @@ function CreateForm() {
               setCreation = {setCreation}
               setNameForm = {setNameForm}
               setDescription = {setDescription}
-              setKeyDefined = {setKeyDefined}
-              setType = {false}
-              setPohControl = {changePohControl}
-              permissions = {permissions}
-              setPermissions = {false} // error in databaseDataInput (setPermissions is overriden in state)
-              setPermissionsType = {false}
+              // setKeyDefined = {setKeyDefined}
+              setType = {false} // keyvalue/docstore/counter/etc
+              // setPohControl = {changePohControl}
+              // permissions = {permissions}
+              setPermissions = {setPermissions} // error in databaseDataInput (setPermissions is overriden in state)
+              // setPermissionsType = {false} // here is POH
               TODO = {true}
             />
           :

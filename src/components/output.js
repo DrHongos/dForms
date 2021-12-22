@@ -35,6 +35,7 @@ import {useHistory} from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // needed!!!
 // CSS Modules, react-datepicker-cssmodules.css
+import toast from "react-hot-toast";
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import { useWeb3Context } from '../contexts/Web3Context';
 const Web3 = require('web3');

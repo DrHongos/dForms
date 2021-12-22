@@ -101,7 +101,10 @@ export default function Stats(props) {
               <CheckIcon />
               </HStack>
               :
-              <Button onClick={()=>{addSupport(myFormsDB, 'keyvalue', formObject, getFormCid(formCID))}}>Support this form!</Button>
+              <Button onClick={()=>{
+                addSupport(myFormsDB, 'keyvalue', formObject, getFormCid(formCID))
+                setSupported(true)
+              }}>Support this form!</Button>
             }
 {/*       STATS AND OPERATIONS OVER THE DB SHARED        */}
             {responses?

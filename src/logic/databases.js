@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 export const getDB = async (orbitdb, address) => {
   let db
   if (orbitdb) {
@@ -37,7 +38,7 @@ export const addSupport = async(myForms, type, formObject, formCid)=>{
     added: Date.now()
   })
   // add orbitdb Id to supportersDB!
-  console.log(formObject.name,' added!')
+  toast.success('Form is now supported!')
 }
 
 export const isSupported = async (id, myForms) => {

@@ -11,7 +11,7 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 
 function Home() {
   const  [,, loading,,peers] = useSystemsContext();
-  const { account, providerChainId, loadingWeb3, connectWeb3} = useWeb3Context();
+  const { account, providerChainId, loadingWeb3, connectWeb3, disconnectWeb3} = useWeb3Context();
   const history = useHistory();
   return (
       <VStack>
@@ -34,7 +34,7 @@ function Home() {
               :
               <div>
                 {account}
-                <Button onClick={()=>console.log('todo!')}>Disconnect</Button>
+                <Button onClick={()=>disconnectWeb3()}>Disconnect</Button>
               </div>
             }
             <Text fontSize='sm'>Users connected {peers?peers.length:0}</Text>

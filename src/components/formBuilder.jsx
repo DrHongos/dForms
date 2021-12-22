@@ -261,34 +261,39 @@ function BuilderPage({formData, setFormData}) {
 
             </fieldset>
           </HStack>
-          <Button onClick={()=>setAttr(!attr)}>Attributes</Button>
+          <div style={{margin: '16px'}}>
+            <Button
+              onClick={()=>setAttr(!attr)}>Attributes</Button>
 
-          <button
-            onClick={() => {
-              form.current.scrollIntoView({ behavior: "smooth" })
-            }}
-          >
-            {editIndex >= 0
-              ? <EditIcon />
-              : <AddIcon size='md' style={{color:'green'}}/>}
-          </button>
+            <button
+              style={{marginLeft:'40px' }}
+              onClick={() => {
+                form.current.scrollIntoView({ behavior: "smooth" })
+              }}
+            >
+              {editIndex >= 0
+                ? <EditIcon />
+                : <AddIcon size='md' style={{color:'green'}}/>}
+            </button>
+          </div>
         </form>
 
         <section>
         <Divider />
-        {formData?
-          <FormCreatorItem
-          {...{
-            editIndex,
-            setEditIndex,
-            formData,
-            setFormData,
-            reset
-          }}
-          />
-          :null}
+          <div style={{margin:'16px'}}>
+          {formData?
+            <FormCreatorItem
+            {...{
+              editIndex,
+              setEditIndex,
+              formData,
+              setFormData,
+              reset
+            }}
+            />
+            :null}
+          </div>
         </section>
-
       </div>
     </div>
   )

@@ -6,14 +6,17 @@ import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { HashRouter as Router } from 'react-router-dom'
 import {SystemsProvider} from './contexts/systems';
+import Web3ContextProvider from './contexts/Web3Context';
 
 ReactDOM.render(
   <StrictMode>
     <ColorModeScript />
     <Router>
-      <SystemsProvider>
-        <App /> 
-      </SystemsProvider>
+      <Web3ContextProvider>
+        <SystemsProvider>
+          <App />
+        </SystemsProvider>
+      </Web3ContextProvider>
     </Router>
   </StrictMode>,
   document.getElementById('root')

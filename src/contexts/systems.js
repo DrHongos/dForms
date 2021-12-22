@@ -3,8 +3,9 @@ import IPFS from 'ipfs';
 import Config from './config';
 import OrbitDB from 'orbit-db';
 import POHController from './libs/acl_poh';
-let AccessControllers = require('orbit-db-access-controllers');
+import toast from "react-hot-toast";
 
+let AccessControllers = require('orbit-db-access-controllers');
 AccessControllers.addAccessController({ AccessController: POHController })
 // instances
 let orbitdb
@@ -79,11 +80,12 @@ export const SystemsProvider = ({children}) => {
       repo:'./orbitDBForms',
       AccessControllers: AccessControllers});
     // console.log('OrbitDB connected!',orbitdb)
+    toast.success('OrbitDB loaded')
     setOrbit(orbitdb)
     if(orbitdb){
       getAllDatabases(orbitdb)
     }else{
-      console.log('error on orbit db instance generation')
+      toast.error('error on orbit db instance generation')
     }
     setLoading(false)
     return orbitdb
@@ -204,6 +206,7 @@ export const SystemsProvider = ({children}) => {
         setLoading(true) //does not work!
         ipfs = await IPFS.create(Config.ipfs)
         // console.log('IPFS connected!',ipfs)
+        toast.success('IPFS connected');
         setIpfsNode(ipfs)
 
         // new stuff

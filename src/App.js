@@ -17,6 +17,7 @@ import Stats from './components/stats';
 import MyForms from './components/myForms';
 import FormImport from './components/formImport';
 import GoBack from './components/common/goBack';
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Spacer />
             <ColorModeSwitcher justifySelf="flex-end" />
           </HStack>
+          <Toaster />
           <VStack spacing={8}>
           <Switch>
             <Route path='/create'>

@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 const copy = (str) => {
   const el = document.createElement("textarea")
   el.value = str
@@ -8,5 +9,6 @@ const copy = (str) => {
   el.select()
   document.execCommand("copy")
   document.body.removeChild(el)
+  toast.success('Copied URL to clipboard');
 }
 export default copy;

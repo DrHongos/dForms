@@ -8,19 +8,18 @@ Known bugs:
 - POST error (502) calling a preload node with harcoded v0 attr and a v1 address
 - Test rendezvous node.. maybe cutting off the public ones
 - Each new deploy will create a new content hash that the ENS resolver should update... (with a tx!)
-
+- Description of dForms are not correctly read!
 #TODO
 #####################
-- Create toasts for functionality
-  - copy address function should notify
-  - support this form should notify
-  - add alert for replication post send the form (replication status in stats (own response))
-    -create modal that explains descentralization while it waits for it.. only after successful replication should send you to the stats
+- Check the providerChainId before signing message.. pog is mainnet, daohaus should be xdai
+- Move all systems to a header
 - improve tools & attributes in form creation
-- improve fields naming and visual aids
 - Add options to fields in an interactive dynamic way
 - mix the formitem component output in creation with edit/delete functionality
 - look for more characteristics to be attributes in a field
+- improve fields naming and visual aids
+- add alert for replication post send the form (replication status in stats (own response))
+- create modals that explains descentralization while it waits for it.. only after successful replication should send you to the stats
 
 - See form creation in smartphone perspective
 - add alert of public data in form
