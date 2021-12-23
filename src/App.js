@@ -3,12 +3,9 @@ import {
   ChakraProvider,
   Box,
   VStack,
-  HStack,
-  Spacer,
   Grid,
   theme,
 } from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Header from './components/header';
 import Home from './components/home';
@@ -17,7 +14,6 @@ import Output from './components/output';
 import Stats from './components/stats';
 import MyForms from './components/myForms';
 import FormImport from './components/formImport';
-import GoBack from './components/common/goBack';
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -26,14 +22,6 @@ function App() {
       <Box textAlign="center" fontSize="xl">
         <Header />
         <Grid minH="100vh" p={3}>
-          <HStack>
-            <GoBack
-              path='/'
-              justifySelf="flex-end"
-            />
-            <Spacer />
-            <ColorModeSwitcher justifySelf="flex-end" />
-          </HStack>
           <Toaster />
           <VStack spacing={8}>
           <Switch>

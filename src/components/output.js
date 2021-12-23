@@ -35,7 +35,7 @@ import {useHistory} from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // needed!!!
 // CSS Modules, react-datepicker-cssmodules.css
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import { useWeb3Context } from '../contexts/Web3Context';
 const Web3 = require('web3');
@@ -44,7 +44,7 @@ export default function Output(props) {
   const web3 = new Web3(Web3.givenProvider || 'ws://some.local-or-remote.node:8546');
   const  [ipfsNode, orbit, , myFormsDB, myForms] = useSystemsContext();
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { account, providerChainId, loadingWeb3, connectWeb3} = useWeb3Context();
+  const { account } = useWeb3Context();
   const { formCID } = useParams()
   const [loading, setLoading] = React.useState(false);
   const [formDataR, setFormDataR] = React.useState();
@@ -227,6 +227,7 @@ const formElement = (item) => {
             max:item.max,
             min:item.min,
           })} />
+          {/*errors.name == item.name && <span>This field is required</span>*/}
           <NumberInputStepper>
             <NumberIncrementStepper />
             <NumberDecrementStepper />

@@ -6,12 +6,11 @@ import {
 } from '@chakra-ui/react';
 import {useHistory} from 'react-router-dom';
 import {useSystemsContext} from './../contexts/systems';
-import {useWeb3Context} from '../contexts/Web3Context';
-import {CheckCircleIcon} from '@chakra-ui/icons';
+// import {useWeb3Context} from '../contexts/Web3Context';
 
 function Home() {
   const  [,, loading,,peers] = useSystemsContext();
-  const { account, providerChainId, loadingWeb3, connectWeb3, disconnectWeb3} = useWeb3Context();
+  // const { account, providerChainId, loadingWeb3, connectWeb3, disconnectWeb3} = useWeb3Context();
   const history = useHistory();
   return (
       <VStack>

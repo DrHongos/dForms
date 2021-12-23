@@ -154,7 +154,7 @@ const Web3ContextProvider: React.FC = ({ children }) => {
         },
       }
     );
-  })
+  },[])
 
   useEffect(() => {
     if (window.ethereum) window.ethereum.autoRefreshOnNetworkChange = false;

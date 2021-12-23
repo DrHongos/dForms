@@ -1,8 +1,8 @@
 #TODO
 #####################
-
-- improve tools & attributes in form creation
-- Add options to fields in an interactive dynamic way
+- Add message of error in a field (due to its attributes or requirement)
+- improve tools & attributes in form creation. Which attributes are for which type, displaying.
+- Add options to multiple answers fields in an interactive dynamic way.
 - mix the formitem component output in creation with edit/delete functionality
 - Check the providerChainId before signing message.. pog is mainnet, daohaus should be xdai
 - look for more characteristics to be attributes in a field

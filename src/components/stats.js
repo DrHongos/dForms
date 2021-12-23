@@ -26,7 +26,6 @@ export default function Stats(props) {
   const [formDataFiltered, setFormDataFiltered] = React.useState();
   const [responses, setResponses] = React.useState([]);
   const [supported, setSupported] = React.useState();
-
   const getEntriesKeys = (object) =>{return Object.keys(object)}
   const getFormCid = (formCID) => {return formCID.split('/form/')}
 
@@ -85,8 +84,15 @@ export default function Stats(props) {
         :
           <VStack>
             <Text>name: {formObject.name}</Text>
-            <Text>description: {formObject.formDescription?formObject.formDescription:'no description'}</Text>
-            <Text>Form address: <Text fontSize='xs' color='gray'>{formCID}</Text></Text>
+            <Text>description: {formObject.description?formObject.description:'no description'}</Text>
+            <Text>Form address:
+              <Text
+                fontSize='xs'
+                color='gray'
+                onClick={()=>console.log('https://explore.ipld.io/#/explore/'+formCID)}
+                >{formCID}
+              </Text>
+            </Text>
 
 {/*
             <Text>orbit db responses address: {dB.id}</Text>

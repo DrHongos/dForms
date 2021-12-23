@@ -5,14 +5,14 @@
 // to verify in whatever contract (DAO, POH, etc)
 import { abi } from './pohAbi.js';
 const AccessController = require('orbit-db-access-controllers/src/access-controller-interface')
-const Personal = require('web3-eth-personal');
+// const Personal = require('web3-eth-personal');
 const Web3 = require('web3');
 
 // const isValidEthAddress = require('./utils/is-valid-eth-address')
 const io = require('orbit-db-io')
 const web3Provider = new Web3(window.ethereum);
 const pohAddress = '0xc5e9ddebb09cd64dfacab4011a0d5cedaf7c9bdb'
-const personal = new Personal(Personal.givenProvider || 'ws://some.local-or-remote.node:8546');
+// const personal = new Personal(Personal.givenProvider || 'ws://some.local-or-remote.node:8546');
 const web3 = new Web3(Web3.givenProvider || 'ws://some.local-or-remote.node:8546');
 
 export default class POHController extends AccessController {

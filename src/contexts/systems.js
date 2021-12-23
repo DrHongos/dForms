@@ -21,7 +21,7 @@ export const SystemsProvider = ({children}) => {
   const [loading, setLoading] = React.useState(false);
   const [entries, setEntries] = React.useState();
   const [peers, setPeers] = React.useState();
-  var peerCount = 0; 	// this is kind of a janky way to track peer count. really it'd be better to store the peers
+  // let peerCount = 0; 	// this is kind of a janky way to track peer count. really it'd be better to store the peers
 
   // const prefix = "dForms-";
   // let lastAlive = 0;	// last keep-alive we saw from a relay
