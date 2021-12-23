@@ -3,6 +3,7 @@ import {  Button, Wrap,WrapItem, Spacer, HStack, Text } from "@chakra-ui/react"
 import {useHistory} from 'react-router-dom';
 import Systems from './systems';
 import { ColorModeSwitcher } from './common/ColorModeSwitcher';
+import ConnectedPeers from './connectedPeers';
 // import ConnectedPeers from './commons/connectedPeers';
 // import {useSystemsContext} from '../contexts/systems';
 
@@ -26,6 +27,7 @@ function Header () {
         <Button variant="outline" colorScheme="white" onClick={handleVis}>Home</Button>
         </WrapItem>
       </Wrap>
+      <ConnectedPeers />
     </HStack>
   )
 }
