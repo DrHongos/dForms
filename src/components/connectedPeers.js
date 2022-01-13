@@ -9,12 +9,12 @@ function ConnectedPeers(props) {
   const [addPeer, setAddPeer] = useState(false);
   const [peerToFetch,setPeerToFetch]= useState();
 
-  async function getPeersConnected() {
-    let peers = await ipfsNode.swarm.peers()
-    setPeers(peers);
-    return peers;
-  }
   useEffect(() => {
+    async function getPeersConnected() {
+      let peers = await ipfsNode.swarm.peers()
+      setPeers(peers);
+      return peers;
+    }
     if(ipfsNode){
       window.setInterval(()=>getPeersConnected(), 300); // not working!
     }
@@ -26,8 +26,13 @@ function ConnectedPeers(props) {
     }
     console.log('searching',peerToFetch)
     // validate the data in peerToFetch ['/p2p-circuit/ipfs/'+...]
-    await ipfsNode.swarm.connect('/ip4/7.7.7.7/tcp/4242/p2p-circuit/p2p/'+peerToFetch)
-    // let current = await getPeersConnected();
+    const peerAddress = '/ip4/7.7.7.7/tcp/4242/p2p-circuit/p2p/'+peerToFetch
+    await ipfsNode.bootstrap.add(peerAddress);
+    await ipfsNode.swarm.connect(peerAddress)
+    // console.log('bAdd',bootstrapAdd);
+    // console.log('connection',connect);
+
+    // let current =  await ipfsNode.swarm.peers();
     // console.log('current',current)
     // let dataFound = current.find(x=>x.peer == peerToFetch);
     // if(dataFound){

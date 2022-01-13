@@ -1,6 +1,7 @@
 #TODO
 #####################
 - Add message of error in a field (due to its attributes or requirement)
+- Add peers list on dforms (suscribers?) and peer connection script when opened.
 - define key for users inputs... orbitDb vs Web3 ??? add signed message for verification of web3 account
 - improve tools & attributes in form creation. Which attributes are for which type, displaying.
 - Add options to multiple answers fields in an interactive dynamic way.
